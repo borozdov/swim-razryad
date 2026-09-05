@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { RANK_ORDER } from '@/domain/points/scale';
+import { trackGoal, type Goal } from '@/lib/analytics';
 import { formatTime } from '@/domain/points/time';
 import type { Distance, Pool, Rank, Sex, StandardRow, Stroke } from '@/domain/standards/types';
 import {
@@ -30,6 +31,14 @@ const COLUMNS = ['Ступень', 'Норматив'];
 
 const paneKey = (row: Pick<StandardRow, 'pool' | 'sex' | 'stroke' | 'distance'>): string =>
   `${row.pool}|${row.sex}|${row.stroke}|${row.distance}`;
+
+/*
+  The same four goals fire from the calculator, so each one says which screen it came from;
+  without that the two sets of taps would be indistinguishable in Metrika.
+*/
+const report = (goal: Goal, value: string | number): void => {
+  trackGoal(goal, { where: 'standards', value: String(value) });
+};
 
 /** Youth, adult, title: the rank column shows which of the three runs a row belongs to. */
 const rankTone = (rank: Rank): string => {
@@ -80,15 +89,42 @@ export function StandardsIndex({ rows }: StandardsIndexProps) {
     <div className={s.root}>
       <div className={s.controls}>
         <div className={s.row} data-tour="event">
-          <Segmented value={pool} options={POOL_OPTIONS} onChange={setPool} label="Бассейн" />
-          <Segmented value={sex} options={SEX_OPTIONS} onChange={setSex} label="Пол" />
+          <Segmented
+            value={pool}
+            options={POOL_OPTIONS}
+            onChange={(next) => {
+              report('select_pool', next);
+              setPool(next);
+            }}
+            label="Бассейн"
+          />
+          <Segmented
+            value={sex}
+            options={SEX_OPTIONS}
+            onChange={(next) => {
+              report('select_sex', next);
+              setSex(next);
+            }}
+            label="Пол"
+          />
         </div>
         <div className={s.row} data-tour="stroke">
-          <Chips value={stroke} options={STROKE_OPTIONS} onChange={setStroke} label="Стиль" />
+          <Chips
+            value={stroke}
+            options={STROKE_OPTIONS}
+            onChange={(next) => {
+              report('select_stroke', next);
+              setStroke(next);
+            }}
+            label="Стиль"
+          />
           <Chips
             value={distance}
             options={distances.map((d) => ({ value: d, label: `${d}м` }))}
-            onChange={setWanted}
+            onChange={(next) => {
+              report('select_distance', next);
+              setWanted(next);
+            }}
             label="Дистанция"
           />
         </div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { RANK_MIN_AGE, RANK_ORDER } from '@/domain/points/scale';
 import type { Edition } from '@/domain/standards/types';
+import { AuthorLink } from '@/features/site-footer/AuthorLink';
 import { authorUrl } from '@/features/site-footer/SiteFooter';
 import { RANK_FULL_LABEL, RANK_LABEL, formatIsoDate } from '@/lib/labels';
 import { poolSpread, poolSpreadSentence, youthSpreadSentence } from '@/lib/ranksCopy';
@@ -83,9 +84,9 @@ export function RanksPage({ edition }: RanksPageProps) {
           Сайт сделал Никита Бороздов, мастер спорта по плаванию. Числа переписаны со скана приказа
           вручную и сверены построчно; сторонние таблицы в датасет не попадают, потому что проверить
           их не по чему.{' '}
-          <a href={authorUrl('author_bio')} className={s.link} rel="noopener">
+          <AuthorLink href={authorUrl('author_bio')} from="bio" className={s.link}>
             borozdov.ru
-          </a>
+          </AuthorLink>
         </p>
       </section>
 

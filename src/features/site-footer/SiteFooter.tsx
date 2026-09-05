@@ -16,7 +16,12 @@ export function SiteFooter() {
         <br />
         мастер спорта
       </span>
-      <AuthorLink href={AUTHOR_URL} />
+      <AuthorLink href={AUTHOR_URL} from="footer" className={s.authorLink}>
+        borozdov.ru{' '}
+        <span className={s.arrow} aria-hidden="true">
+          →
+        </span>
+      </AuthorLink>
     </footer>
   );
 }

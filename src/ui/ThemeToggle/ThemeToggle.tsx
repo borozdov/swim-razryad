@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { trackGoal } from '@/lib/analytics';
 import {
   applyTheme,
   readAppliedTheme,
@@ -43,6 +44,8 @@ export function ThemeToggle() {
     saveTheme(localStorage, next);
     applyTheme(root, next);
     setTheme(next);
+    // The look that was switched to, not the one left behind: that is the choice made.
+    trackGoal('theme_toggle', { theme: next });
   };
 
   const label = theme ? LABELS[theme] : 'Переключить тему';

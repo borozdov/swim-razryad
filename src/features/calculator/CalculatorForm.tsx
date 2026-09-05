@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import type { Distance, Pool, Sex, Stroke } from '@/domain/standards/types';
+import { trackGoal, type Goal } from '@/lib/analytics';
 import { POOL_SHORT_LABEL, SEX_SHORT_LABEL, STROKE_SHORT_LABEL } from '@/lib/labels';
 import { Chips, Segmented, TimeInput } from '@/ui';
 import type { CalculatorState } from './useCalculator';
@@ -17,6 +18,11 @@ const STROKE_OPTIONS = STROKES.map((stroke) => ({
   label: STROKE_SHORT_LABEL[stroke],
 }));
 const SEX_OPTIONS = SEXES.map((sex) => ({ value: sex, label: SEX_SHORT_LABEL[sex] }));
+
+/* The standards screen fires the same four goals, so each one names the screen it is on. */
+const report = (goal: Goal, value: string | number): void => {
+  trackGoal(goal, { where: 'calculator', value: String(value) });
+};
 
 export type CalculatorFormProps = {
   state: CalculatorState;
@@ -41,14 +47,20 @@ export function CalculatorForm({
         <Segmented
           value={state.pool}
           options={POOL_OPTIONS}
-          onChange={(pool) => onChange({ pool })}
+          onChange={(pool) => {
+            report('select_pool', pool);
+            onChange({ pool });
+          }}
           label="Бассейн"
           name="pool"
         />
         <Segmented
           value={state.sex}
           options={SEX_OPTIONS}
-          onChange={(sex) => onChange({ sex })}
+          onChange={(sex) => {
+            report('select_sex', sex);
+            onChange({ sex });
+          }}
           label="Пол"
           name="sex"
         />
@@ -58,14 +70,20 @@ export function CalculatorForm({
         <Chips
           value={state.stroke}
           options={STROKE_OPTIONS}
-          onChange={(stroke) => onChange({ stroke })}
+          onChange={(stroke) => {
+            report('select_stroke', stroke);
+            onChange({ stroke });
+          }}
           label="Стиль"
           name="stroke"
         />
         <Chips
           value={state.distance}
           options={distances.map((distance) => ({ value: distance, label: `${distance}м` }))}
-          onChange={(distance) => onChange({ distance })}
+          onChange={(distance) => {
+            report('select_distance', distance);
+            onChange({ distance });
+          }}
           label="Дистанция"
           name="distance"
         />
