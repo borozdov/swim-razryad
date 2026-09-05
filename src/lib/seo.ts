@@ -29,6 +29,9 @@ export const OG_IMAGE = { url: '/og.png', width: 1200, height: 630, alt: 'Раз
 
 const AUTHOR = { name: 'Nikita Borozdov', url: 'https://borozdov.ru' };
 
+/** The token Яндекс.Вебмастер issued for this host. Changing it un-verifies the site. */
+export const YANDEX_VERIFICATION = '80f947e774535d84';
+
 /**
  * What every page says about itself besides its own title: the card a messenger draws
  * when the link is pasted, and the small print search engines read.
@@ -60,6 +63,12 @@ export const siteMetadata: Metadata = {
   */
   // The times are digits, and iOS reads long runs of them as telephone numbers.
   formatDetection: { telephone: false },
+  /*
+    Proof of ownership for Яндекс.Вебмастер. A subdomain is a separate site to Yandex and
+    needs its own. A meta tag is the fragile way to hold one — a refactor of the layout
+    drops it and the site silently un-verifies — so seo.test.ts pins the code.
+  */
+  verification: { yandex: YANDEX_VERIFICATION },
 };
 
 /*

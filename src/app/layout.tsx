@@ -91,6 +91,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       {/* The chrome lives in the (shell) group; /qr/ is a screen of its own and skips it. */}
       <body>
+        {METRIKA_ID === null ? null : (
+          <noscript>
+            {/*
+              Every page is prerendered, so a reader with scripts off still gets the tables
+              and is worth counting. The pixel is positioned by a class, not a style
+              attribute: there are no inline styles in this project.
+            */}
+            {/* next/image is a React component and renders nothing inside a noscript;
+                this is a 1x1 beacon, not an image the layout has to reserve room for. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="metrika-pixel"
+              src={`https://mc.yandex.ru/watch/${METRIKA_ID}`}
+              alt=""
+            />
+          </noscript>
+        )}
         {children}
         <ServiceWorkerBridge />
       </body>

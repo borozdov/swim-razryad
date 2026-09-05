@@ -66,6 +66,12 @@ body {
   overscroll-behavior: none;
 }
 
+/* The Metrika pixel for readers with scripts off: present, measured, never seen. */
+.metrika-pixel {
+  position: absolute;
+  left: -9999px;
+}
+
 /*
   The app is one screen: nothing scrolls, every page of it lays itself out inside the
   viewport. The rule is scoped to the shell that declares itself a screen, because the
