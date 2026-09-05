@@ -7,8 +7,9 @@
  * meta tags are pinned through the constants it renders, plus the check below that the
  * file states no colour of its own.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { inflateSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { OBSIDIAN_CANVAS, TITAN_CANVAS } from '@/lib/theme';
 
@@ -41,6 +42,57 @@ const pngSize = (path: string): { width: number; height: number } => {
   const bytes = readFileSync(new URL(path, import.meta.url));
   expect(bytes.subarray(1, 4).toString('ascii')).toBe('PNG');
   return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+};
+
+/**
+ * One pixel of a PNG, as a #rrggbb string. Written out rather than pulled from a library
+ * because it is the only thing that can tell a titan plate from an obsidian one, and the
+ * polarity of these files is exactly what goes wrong unnoticed.
+ */
+const pngPixel = (path: string, x: number, y: number): string => {
+  const bytes = readFileSync(new URL(path, import.meta.url));
+  const width = bytes.readUInt32BE(16);
+  const colourType = bytes.readUInt8(25);
+  const channels = colourType === 6 ? 4 : 3;
+
+  // Every IDAT chunk of the file, in order, is one zlib stream.
+  const parts: Buffer[] = [];
+  for (let at = 8; at + 8 <= bytes.length;) {
+    const length = bytes.readUInt32BE(at);
+    const type = bytes.subarray(at + 4, at + 8).toString('ascii');
+    if (type === 'IDAT') parts.push(bytes.subarray(at + 8, at + 8 + length));
+    at += length + 12;
+  }
+  const raw = inflateSync(Buffer.concat(parts));
+
+  // Undo the per-row filter. Only the rows up to y are needed, but each depends on the one
+  // above it, so they are walked from the top.
+  const stride = width * channels;
+  const out = Buffer.alloc((y + 1) * stride);
+  for (let row = 0; row <= y; row += 1) {
+    const filter = raw[row * (stride + 1)];
+    const line = raw.subarray(row * (stride + 1) + 1, (row + 1) * (stride + 1));
+    for (let i = 0; i < stride; i += 1) {
+      const left = i >= channels ? out[row * stride + i - channels] : 0;
+      const up = row > 0 ? out[(row - 1) * stride + i] : 0;
+      const upLeft = row > 0 && i >= channels ? out[(row - 1) * stride + i - channels] : 0;
+      let value = line[i];
+      if (filter === 1) value += left;
+      else if (filter === 2) value += up;
+      else if (filter === 3) value += (left + up) >> 1;
+      else if (filter === 4) {
+        const p = left + up - upLeft;
+        const dl = Math.abs(p - left);
+        const du = Math.abs(p - up);
+        const dul = Math.abs(p - upLeft);
+        value += dl <= du && dl <= dul ? left : du <= dul ? up : upLeft;
+      }
+      out[row * stride + i] = value & 0xff;
+    }
+  }
+
+  const at = y * stride + x * channels;
+  return `#${[out[at], out[at + 1], out[at + 2]].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
 };
 
 /** Colour type of a PNG, off the same IHDR chunk: 4 and 6 are the two that carry alpha. */
@@ -99,37 +151,55 @@ describe('web manifest', () => {
 
 describe('what a tab and a home screen ask for by name', () => {
   /*
-    Google reads no SVG, and crawlers and unfurlers request /favicon.ico without being
-    told to, so this file is the one that answers a search.
+    Crawlers and unfurlers request /favicon.ico without being told to, so this file is the
+    one that answers a search. Three sizes inside it, so a browser picks one instead of
+    scaling the only one there is.
   */
-  it('answers /favicon.ico with a real 32-pixel icon', () => {
+  it('answers /favicon.ico with three real sizes', () => {
     // Not `new URL(..., import.meta.url)`: Vite rewrites that into a served asset URL
     // for an .ico, and readFileSync is handed something that is no longer a file.
     const bytes = readFileSync(resolve(process.cwd(), 'public/favicon.ico'));
 
     expect(bytes.readUInt16LE(0)).toBe(0);
     expect(bytes.readUInt16LE(2)).toBe(1);
-    expect(bytes.readUInt16LE(4)).toBeGreaterThan(0);
-    expect(bytes.readUInt8(6)).toBe(32);
-    expect(bytes.readUInt8(7)).toBe(32);
+    const count = bytes.readUInt16LE(4);
+    const sizes = Array.from({ length: count }, (_, i) => bytes.readUInt8(6 + i * 16));
+
+    expect(sizes.sort((a, b) => a - b)).toEqual([16, 32, 48]);
+  });
+
+  /** Yandex asks for a 120 by name for the favicon it draws in a search result. */
+  it('ships the 120 a search result asks for', () => {
+    expect(pngSize('../../public/favicon-120.png')).toEqual({ width: 120, height: 120 });
+  });
+
+  /*
+    A favicon is a constant of the brand and must not mirror: a vector that follows
+    prefers-color-scheme becomes a dark square on a dark tab strip and vanishes. The plate
+    is titan and the letter obsidian, always, which reads on either strip.
+  */
+  it('keeps the favicon a constant, and off the colour scheme', () => {
+    // theme-color legitimately splits by scheme; the icon set must not.
+    expect(existsSync(resolve(process.cwd(), 'public/icon.svg'))).toBe(false);
+    expect(read('./layout.tsx')).not.toContain('image/svg+xml');
+
+    // Two samples: the plate above the letter, and the body of its stem.
+    const plate = pngPixel('../../public/favicon-120.png', 60, 8);
+    const ink = pngPixel('../../public/favicon-120.png', 38, 28);
+    expect(plate).toBe(declaredCanvas('titan'));
+    expect(ink).toBe(declaredCanvas('obsidian'));
+  });
+
+  /** The outward look of the brand is the dark one: application icons invert the favicon. */
+  it('draws the application icons the other way round', () => {
+    expect(pngPixel('../../public/icons/icon-512.png', 4, 4)).toBe(declaredCanvas('obsidian'));
+    expect(pngPixel('../../public/apple-touch-icon.png', 4, 4)).toBe(declaredCanvas('obsidian'));
   });
 
   /** iOS composites transparency onto black, and a dark mark on black is no mark at all. */
   it('ships the apple touch icon at 180 and opaque', () => {
     expect(pngSize('../../public/apple-touch-icon.png')).toEqual({ width: 180, height: 180 });
     expect(pngHasAlpha('../../public/apple-touch-icon.png')).toBe(false);
-  });
-
-  /*
-    The vector is the only icon that can follow the system scheme, because a favicon is
-    cached far too aggressively to be redrawn when the look changes.
-  */
-  it('draws the vector mark in both schemes, in the colours of the raster icons', () => {
-    const svg = read('../../public/icon.svg');
-
-    expect(svg).toContain('viewBox="0 0 64 64"');
-    expect(svg).toContain('@media (prefers-color-scheme: dark)');
-    expect(new Set(svg.match(/#[0-9a-f]{6}/g))).toEqual(new Set(['#0b0b0c', '#f2f2f3']));
   });
 });
 

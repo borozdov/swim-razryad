@@ -39,15 +39,19 @@ export const metadata: Metadata = {
   title: { default: 'Разряд', template: '%s · Разряд' },
   description: 'Разрядные нормативы ЕВСК по плаванию и очки разряда.',
   manifest: '/manifest.webmanifest',
+  /*
+    Raster only, and never a vector that follows the colour scheme: an icon that inverts
+    with the system turns into a dark square on a dark tab strip and disappears. The
+    favicon is a constant of the brand — a titan plate with an obsidian letter, which
+    reads on a light strip and a dark one alike.
+
+    The .ico carries 16, 32 and 48 so a browser picks instead of scaling; the 120 is what
+    Yandex asks for by name in search results, and it has to be a real URL, not a data URI.
+  */
   icons: {
     icon: [
-      /*
-        Google reads no SVG, and a crawler or an unfurler asks for /favicon.ico blindly,
-        so the .ico is the one that answers a search. The explicit sizes are what keeps
-        Chrome from preferring it over the vector in a tab that can draw the vector.
-      */
-      { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+      { url: '/favicon-120.png', type: 'image/png', sizes: '120x120' },
     ],
     // iOS never reads the manifest icons for the home screen; it reads apple-touch-icon,
     // at 180 and opaque, because transparency there is composited onto black.
