@@ -67,3 +67,17 @@
 .authorLink:hover .arrow {
   transform: translateX(2px);
 }
+
+/* Same rule as the shell: on a screen too short for it, the footer shrinks with it. */
+[data-screen='app'] .root {
+  padding-top: min(0.5rem, 1.2dvh);
+}
+
+[data-screen='app'] .author,
+[data-screen='app'] .authorLink {
+  font-size: min(0.625rem, 1.5dvh);
+}
+
+[data-screen='app'] .authorLink {
+  padding: min(5px, 0.75dvh) 9px;
+}

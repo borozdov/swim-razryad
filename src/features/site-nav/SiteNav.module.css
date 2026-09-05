@@ -27,6 +27,12 @@
     color 0.15s ease;
 }
 
+/* Same rule as the shell: on a screen too short for it, the tab band shrinks with it. */
+[data-screen='app'] .item {
+  padding: min(9px, 1.35dvh) 4px;
+  font-size: min(0.72rem, 1.72dvh);
+}
+
 .item:hover {
   color: var(--ink);
 }

@@ -96,7 +96,55 @@
   padding: 0 0.25rem;
 }
 
-/* A short screen keeps the card and lets the scale go: the rank matters more than the ladder. */
+/*
+  The two rungs the result stands between, with the times the order sets. The gap above
+  says how far; this says what to swim. Declared above the height bands and not below them:
+  below them it won every property they name, and the row they meant to squeeze never
+  squeezed at all.
+*/
+.nearby {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.nearbyRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.nearbyRank {
+  color: var(--slate);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nearbyTime {
+  margin: 0;
+  color: var(--slate);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* The rung already made reads in full ink; the one ahead stays quiet. */
+.nearbyDone .nearbyTime,
+.nearbyDone .nearbyRank {
+  color: var(--softened);
+}
+
+/*
+  A short screen keeps the card and lets the scale go: the rank matters more than the
+  ladder. Dropping the ladder is a decision about what is worth showing, not a guess at how
+  tall anything is, so the block at the foot of the file leaves it standing; the sizes in
+  here are the guess, and that block replaces them.
+*/
 @media (max-height: 700px) {
   .scale {
     display: none;
@@ -139,42 +187,78 @@
 }
 
 /*
-  The two rungs the result stands between, with the times the order sets. The gap above
-  says how far; this says what to swim.
+  The fit, measured instead of guessed, the way the ladder of the front page was fitted in
+  `v22`. The card declares itself a size container, so every size inside it is read off the
+  height the card was actually handed rather than off a breakpoint's guess at it.
+
+  The fullest stack is the caption, the rank on two lines, the gap line, the points and the
+  two rungs, and it stands 170px tall at its own sizes. Two lines and not three: the one
+  name that takes three, master of sport of international class, is the top of the ladder,
+  so it comes with no gap line and one rung instead of two, and its stack is the shorter of
+  the two. One hairline is 1px whatever else happens, so the budget is `100cqh - 1px` and
+  every coefficient below is that size as a share of 175, the taller stack with a twentieth
+  over it. Everything therefore reaches its own size together, at one card height and with
+  no band in between, and under that height the whole stack shrinks instead of the last rung
+  sliding out under `overflow: hidden`. A name that takes one line leaves the second as air,
+  which `safe center` absorbs.
+
+  The card's own frame cannot ask the card, so the padding and the floor read `cqh` of the
+  panel above instead, and the row gaps move onto the children, where they can ask. The two
+  `display: none` rules above stay live in both paths: what is worth showing on a short
+  screen is a decision, and this block only replaces the arithmetic. The height media
+  queries are left as they were for a browser without container queries, where the old
+  bands still beat nothing; here they are dead, because this block comes last.
 */
-.nearby {
-  display: flex;
-  gap: 1.25rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--hairline);
-}
+@supports (container-type: size) {
+  .card {
+    container-type: size;
+    gap: 0;
+    min-height: min(5rem, 20.3cqh);
+    padding: min(14px, 3.54cqh);
+  }
 
-.nearbyRow {
-  display: flex;
-  align-items: baseline;
-  gap: 0.375rem;
-}
+  .rank {
+    margin-top: min(3px, (100cqh - 1px) * 0.0171);
+    font-size: min(2rem, 6.5vw, (100cqh - 1px) * 0.1393);
+  }
 
-.nearbyRank {
-  color: var(--slate);
-  font-size: 0.625rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
+  .gap {
+    margin-top: min(7px, (100cqh - 1px) * 0.04);
+  }
 
-.nearbyTime {
-  margin: 0;
-  color: var(--slate);
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
+  .points {
+    margin-top: min(3px, (100cqh - 1px) * 0.0171);
+  }
 
-/* The rung already made reads in full ink; the one ahead stays quiet. */
-.nearbyDone .nearbyTime,
-.nearbyDone .nearbyRank {
-  color: var(--softened);
+  .label,
+  .gapLabel,
+  .pointsLabel {
+    font-size: min(0.6rem, (100cqh - 1px) * 0.0549);
+  }
+
+  .gapValue {
+    font-size: min(1.375rem, (100cqh - 1px) * 0.1257);
+  }
+
+  .gapUnit {
+    font-size: min(0.75rem, (100cqh - 1px) * 0.0686);
+  }
+
+  .pointsValue {
+    font-size: min(1rem, (100cqh - 1px) * 0.0914);
+  }
+
+  .nearby {
+    gap: min(1.25rem, (100cqh - 1px) * 0.1143);
+    margin-top: min(11px, (100cqh - 1px) * 0.0629);
+    padding-top: min(8px, (100cqh - 1px) * 0.0457);
+  }
+
+  .nearbyRank {
+    font-size: min(0.625rem, (100cqh - 1px) * 0.0571);
+  }
+
+  .nearbyTime {
+    font-size: min(0.875rem, (100cqh - 1px) * 0.08);
+  }
 }

@@ -20,6 +20,20 @@
   min-height: 100dvh;
 }
 
+/*
+  An app screen has to fit whatever height it is handed, so below a screen tall enough to
+  need nothing its chrome is a fraction of that height rather than a fixed size with a
+  breakpoint under it: the px is what the value measures at 667px of viewport, the dvh is
+  the same value as a share of it, and min() takes whichever is smaller. Every block gives
+  up its share at once and continuously, and what they give up goes to the page below.
+  The reference layer scrolls and is not squeezed, so it keeps the fixed sizes.
+*/
+.shell[data-screen='app'] {
+  gap: min(0.5rem, 1.2dvh);
+  padding-top: max(min(10px, 1.5dvh), env(safe-area-inset-top));
+  padding-bottom: max(min(8px, 1.2dvh), env(safe-area-inset-bottom));
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -27,6 +41,10 @@
   flex-shrink: 0;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--hairline);
+}
+
+[data-screen='app'] .header {
+  padding-bottom: min(0.5rem, 1.2dvh);
 }
 
 /* The two icon buttons of the header stand together, away from the wordmark. */

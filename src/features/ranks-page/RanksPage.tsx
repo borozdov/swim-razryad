@@ -4,7 +4,7 @@ import type { Edition } from '@/domain/standards/types';
 import { AuthorLink } from '@/features/site-footer/AuthorLink';
 import { authorUrl } from '@/features/site-footer/SiteFooter';
 import { RANK_FULL_LABEL, RANK_LABEL, formatIsoDate } from '@/lib/labels';
-import { poolSpread, poolSpreadSentence, youthSpreadSentence } from '@/lib/ranksCopy';
+import { poolSpread, poolSpreadSentence, spreadGrowsSentence } from '@/lib/ranksCopy';
 import { CALCULATOR_PATH, HOME_PATH } from '@/lib/routes';
 import { CAVEATS } from '@/lib/standardsCopy';
 import { Breadcrumbs, Table } from '@/ui';
@@ -33,6 +33,7 @@ export type RanksPageProps = {
 export function RanksPage({ edition }: RanksPageProps) {
   const cms = poolSpread(edition, 'CMS');
   const youth = poolSpread(edition, 'YOUTH_3');
+  const top = poolSpread(edition, 'MSMK');
 
   return (
     <article className={s.root}>
@@ -68,7 +69,7 @@ export function RanksPage({ edition }: RanksPageProps) {
           Насколько отдельные, сам приказ не говорит, но это можно посчитать по его же таблице.
         </p>
         <p>{poolSpreadSentence(cms, 'CMS')}</p>
-        <p>{youthSpreadSentence(youth, 'YOUTH_3')}</p>
+        <p>{spreadGrowsSentence(youth, top, 'YOUTH_3', 'MSMK')}</p>
       </section>
 
       <section className={s.prose}>

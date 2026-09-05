@@ -4,10 +4,15 @@
   min-width: 0;
 }
 
+/*
+  A filter row gives its height back to whatever reads it below, and gives it back by the
+  drop rather than at a line the viewport crosses: the px is the size at 667px of viewport,
+  the dvh is the same size as a share of it, min() takes the smaller.
+*/
 .label {
-  margin-bottom: 5px;
+  margin-bottom: min(5px, 0.75dvh);
   color: var(--slate);
-  font-size: 0.62rem;
+  font-size: min(0.62rem, 1.5dvh);
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -25,12 +30,12 @@
 .option {
   flex: 1;
   min-width: 0;
-  padding: 8px 4px;
+  padding: min(8px, 1.2dvh) 4px;
   background: none;
   border: 0;
   border-radius: 4px;
   color: var(--slate);
-  font-size: 0.85rem;
+  font-size: min(0.85rem, 2.04dvh);
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.04em;
@@ -61,19 +66,6 @@
   .active:hover {
     background: var(--ink);
     color: var(--canvas);
-  }
-}
-
-/* The shortest phones: a filter row gives its height back to whatever reads it below. */
-@media (max-height: 600px) {
-  .label {
-    margin-bottom: 2px;
-    font-size: 0.55rem;
-  }
-
-  .option {
-    padding: 5px 4px;
-    font-size: 0.75rem;
   }
 }
 

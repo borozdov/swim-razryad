@@ -4,8 +4,9 @@
  * back out of the dataset.
  */
 import { describe, expect, it } from 'vitest';
+import { RANK_ORDER } from '@/domain/points/scale';
 import { CURRENT_EDITION, findStandard, listEvents } from '@/domain/standards/registry';
-import { poolSpread, poolSpreadSentence, youthSpreadSentence } from './ranksCopy';
+import { poolSpread, poolSpreadSentence, spreadGrowsSentence } from './ranksCopy';
 
 const bothPools = listEvents().filter(
   (event) =>
@@ -38,19 +39,32 @@ describe('how the two pools are set against each other', () => {
   });
 
   /*
-    The claim the page makes is that the ratio holds at КМС and does not at the bottom
-    rung. If an edition ever made the bottom rung consistent too, the sentence would be
-    wrong and this fails rather than lying on thirty-five pages.
+    Короткая вода поставлена быстрее на каждой ступени без исключений. Это утверждение
+    страницы, и держать его должен тест: первая же редакция, где какое-то событие выпадет
+    в минус, обязана уронить сборку, а не тихо сделать текст неправдой.
   */
-  it('holds at КМС and comes apart at the bottom rung, which is what the page says', () => {
-    expect(poolSpread(CURRENT_EDITION, 'CMS').min).toBeGreaterThan(0);
-    expect(poolSpread(CURRENT_EDITION, 'YOUTH_3').min).toBeLessThan(0);
+  it('never sets the short course slower, on any rung', () => {
+    for (const rank of RANK_ORDER) {
+      expect(poolSpread(CURRENT_EDITION, rank).min).toBeGreaterThan(0);
+    }
   });
 
-  it('prints a real minus, since the sign is the whole point of the second sentence', () => {
-    const youth = poolSpread(CURRENT_EDITION, 'YOUTH_3');
+  /*
+    Второе утверждение страницы: фора растёт со ступенью. Проверяется по медиане, а не по
+    краям — один выброс на длинной дистанции края и так растягивает.
+  */
+  it('grows with the rung, which is the claim the page makes', () => {
+    const medians = RANK_ORDER.map((rank) => poolSpread(CURRENT_EDITION, rank).median);
 
-    expect(youthSpreadSentence(youth, 'YOUTH_3')).toContain('−');
+    expect(medians.at(-1)).toBeGreaterThan(medians[0] * 2);
+    expect(
+      spreadGrowsSentence(
+        poolSpread(CURRENT_EDITION, 'YOUTH_3'),
+        poolSpread(CURRENT_EDITION, 'MSMK'),
+        'YOUTH_3',
+        'MSMK',
+      ),
+    ).toContain('МСМК');
     expect(poolSpreadSentence(poolSpread(CURRENT_EDITION, 'CMS'), 'CMS')).toContain('КМС');
   });
 });

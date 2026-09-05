@@ -102,14 +102,16 @@ const pngHasAlpha = (path: string): boolean => {
   return colourType === 4 || colourType === 6;
 };
 
-/** The --canvas globals.css declares for one look, read out of the file itself. */
-const declaredCanvas = (look: 'obsidian' | 'titan'): string => {
+/** A colour role globals.css declares for one look, read out of the file itself. */
+const declaredRole = (look: 'obsidian' | 'titan', role: 'canvas' | 'surface'): string => {
   const css = read('./globals.css');
   const block = css.slice(css.indexOf(`[data-theme='${look}']`));
-  const declaration = /--canvas:\s*([^;]+);/.exec(block);
+  const declaration = new RegExp(`--${role}:\\s*([^;]+);`).exec(block);
   expect(declaration).not.toBeNull();
   return declaration?.[1].trim() ?? '';
 };
+
+const declaredCanvas = (look: 'obsidian' | 'titan'): string => declaredRole(look, 'canvas');
 
 describe('web manifest', () => {
   it('carries what a browser needs to offer the install', () => {
@@ -176,24 +178,30 @@ describe('what a tab and a home screen ask for by name', () => {
   /*
     A favicon is a constant of the brand and must not mirror: a vector that follows
     prefers-color-scheme becomes a dark square on a dark tab strip and vanishes. The plate
-    is titan and the letter obsidian, always, which reads on either strip.
+    is white and the letter obsidian, always, which reads on either strip.
   */
   it('keeps the favicon a constant, and off the colour scheme', () => {
     // theme-color legitimately splits by scheme; the icon set must not.
     expect(existsSync(resolve(process.cwd(), 'public/icon.svg'))).toBe(false);
     expect(read('./layout.tsx')).not.toContain('image/svg+xml');
 
-    // Two samples: the plate above the letter, and the body of its stem.
+    // Two samples: the plate above the letter, and the body of the left stem of Д.
     const plate = pngPixel('../../public/favicon-120.png', 60, 8);
-    const ink = pngPixel('../../public/favicon-120.png', 38, 28);
-    expect(plate).toBe(declaredCanvas('titan'));
-    expect(ink).toBe(declaredCanvas('obsidian'));
+    const ink = pngPixel('../../public/favicon-120.png', 47, 27);
+    expect(plate).toBe(declaredRole('titan', 'surface'));
+    expect(ink).toBe(declaredRole('obsidian', 'canvas'));
   });
 
-  /** The outward look of the brand is the dark one: application icons invert the favicon. */
-  it('draws the application icons the other way round', () => {
-    expect(pngPixel('../../public/icons/icon-512.png', 4, 4)).toBe(declaredCanvas('obsidian'));
-    expect(pngPixel('../../public/apple-touch-icon.png', 4, 4)).toBe(declaredCanvas('obsidian'));
+  /*
+    Every icon of the brand is one drawing: black letter on white. Application icons used
+    to invert the favicon, and the set read as two different brands depending on where you
+    looked at it — a tab strip or a home screen.
+  */
+  it('draws the application icons the same way round as the favicon', () => {
+    expect(pngPixel('../../public/icons/icon-512.png', 4, 4)).toBe(declaredRole('titan', 'surface'));
+    expect(pngPixel('../../public/apple-touch-icon.png', 4, 4)).toBe(
+      declaredRole('titan', 'surface'),
+    );
   });
 
   /** iOS composites transparency onto black, and a dark mark on black is no mark at all. */
@@ -235,10 +243,14 @@ describe('theme colour', () => {
     expect(TITAN_CANVAS).toBe(declaredCanvas('titan'));
   });
 
-  /** An installed app launches in the primary look, whatever the system is set to. */
-  it('paints the installed app in the primary look', () => {
+  /*
+    theme_color paints the system bars and stays obsidian, the primary look. background_color
+    is the ground Android paints behind the icon while the app starts, so it follows the icon
+    to white — a dark ground would flash around a white icon.
+  */
+  it('paints the system bars in the primary look and the splash behind the icon', () => {
     expect(manifest.theme_color).toBe(declaredCanvas('obsidian'));
-    expect(manifest.background_color).toBe(declaredCanvas('obsidian'));
+    expect(manifest.background_color).toBe(declaredRole('titan', 'surface'));
   });
 
   it('leaves layout.tsx stating no colour of its own', () => {

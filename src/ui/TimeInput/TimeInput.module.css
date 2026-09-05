@@ -110,7 +110,8 @@
   }
 }
 
-/* The smallest phones: the fields lose some air so the answer keeps its place below. */
+/* Fallback for a browser without container queries; the block at the foot of the file
+   replaces this band wherever it can be replaced. */
 @media (max-height: 600px) {
   .root {
     gap: 6px;
@@ -123,5 +124,43 @@
 
   .quick {
     padding: 6px 10px;
+  }
+}
+
+/*
+  The air of the field, measured off the panel it shares with the answer instead of off a
+  guess at the window. `.panel` in `CalculatorForm.module.css` is the size container; the
+  px in each min() is the size the field stands at when that panel can hold the field, the
+  answer and the ladder at their own sizes, which is 395px of panel, and each coefficient
+  is that px as a share of it. Below that the field gives its air up by the drop, and every
+  pixel it gives up goes to the card underneath. The height media query above is left as it
+  was for a browser without container queries; here it is dead, because this block comes
+  last.
+
+  Two sizes are not in the budget and do not move. The quick line stays at exactly 1rem for
+  the reason written above it, and the labels over the three fields are already at 0.55rem,
+  which is the floor of the type scale rather than a size with room in it.
+*/
+@supports (container-type: size) {
+  .root {
+    gap: min(8px, 2.03cqh);
+  }
+
+  .cell {
+    gap: min(3px, 0.76cqh);
+  }
+
+  .fieldInput {
+    padding: min(9px, 2.28cqh) 2px;
+    font-size: min(1.3rem, 5.27cqh);
+  }
+
+  .sep {
+    padding-bottom: min(8px, 2.03cqh);
+    font-size: min(1.2rem, 4.86cqh);
+  }
+
+  .quick {
+    padding: min(9px, 2.28cqh) 10px;
   }
 }

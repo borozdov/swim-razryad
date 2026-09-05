@@ -52,19 +52,23 @@ export const poolSpread = (edition: Edition, rank: Rank): PoolSpread => {
 /** One decimal and a comma, as Russian writes a fraction. No unit: the range carries it. */
 const number = (value: number): string => value.toFixed(1).replace('.', ',');
 
-/** A real minus and a real plus, because half of these numbers change the sentence's meaning. */
-const signed = (value: number): string => (value < 0 ? `−${number(-value)}` : `+${number(value)}`);
-
 export const poolSpreadSentence = (spread: PoolSpread, rank: Rank): string =>
   `На ступени ${RANK_LABEL[rank]} приказ ставит бассейн 25 м быстрее ` +
   `на ${number(spread.min)}–${number(spread.max)} %, медиана ${number(spread.median)} %, ` +
   `и так на всех ${spread.pairs} парах событий, которые есть в обоих бассейнах.`;
 
 /**
- * The same measurement on the bottom rung, where it falls apart. Worth saying out loud:
- * a reader who assumes one ratio holds down the whole ladder will be wrong by seconds.
+ * И то, что видно, только если смерить всю лестницу: фора короткой воды растёт вместе со
+ * ступенью. Повороты стоят тем дороже, чем быстрее пловец, поэтому одним коэффициентом два
+ * бассейна не пересчитываются — ни тем, что годится новичку, ни тем, что годится мастеру.
  */
-export const youthSpreadSentence = (spread: PoolSpread, rank: Rank): string =>
-  `На ступени ${RANK_LABEL[rank]} такой закономерности нет: разброс от ${signed(spread.min)} % ` +
-  `до ${signed(spread.max)} %, то есть на части дистанций короткая вода поставлена медленнее ` +
-  'длинной. Пересчитать один бассейн в другой одним коэффициентом нельзя.';
+export const spreadGrowsSentence = (
+  low: PoolSpread,
+  high: PoolSpread,
+  lowRank: Rank,
+  highRank: Rank,
+): string =>
+  `Причём разрыв растёт вместе со ступенью: на ${RANK_LABEL[lowRank]} медиана ` +
+  `${number(low.median)} %, на ${RANK_LABEL[highRank]} — ${number(high.median)} %. ` +
+  'Повороты стоят тем дороже, чем быстрее пловец, и одним коэффициентом два бассейна ' +
+  'не пересчитываются.';

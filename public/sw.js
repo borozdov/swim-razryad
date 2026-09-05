@@ -7,7 +7,7 @@
 
   Bump CACHE_NAME to drop every old cache at once.
 */
-const CACHE_NAME = 'razryad-v4';
+const CACHE_NAME = 'razryad-v5';
 
 /** The app shell: every page of the site plus what a browser needs to install it. */
 const PRECACHE = [
