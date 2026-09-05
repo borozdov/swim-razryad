@@ -1,0 +1,71 @@
+/*
+  The reference layer, not the app: this page is read down. The column is the same 30rem
+  the shell holds everywhere else, so the two layers look like one site.
+*/
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  line-height: 1.15;
+}
+
+.lead {
+  color: var(--slate);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.subhead {
+  margin-bottom: 0.25rem;
+  color: var(--slate);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+.prose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.link:hover {
+  text-decoration-color: var(--ink);
+}
+
+.source {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--hairline);
+  color: var(--slate);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}

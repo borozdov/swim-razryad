@@ -1,0 +1,74 @@
+/*
+  One mobile column, the same on a phone and on a desktop, sized like the shell of
+  fina.borozdov.ru: the app is a tool held in one hand, a wide layout would only spread
+  the same five controls thin.
+*/
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: max(10px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+}
+
+/* The reference layer grows past the fold instead of being squeezed into it. */
+.page {
+  height: auto;
+  min-height: 100dvh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* The two icon buttons of the header stand together, away from the wordmark. */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.wordmarkTop {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.wordmarkBottom {
+  margin-top: 3px;
+  color: var(--slate);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.15s ease;
+}
+
+.wordmark:hover .wordmarkBottom {
+  color: var(--ink);
+}
+
+/* The page gets the rest of the height and lays itself out inside it; overflow is a bug, not a scroll. */
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}

@@ -1,0 +1,7 @@
+# pnpm 11 reads these settings here, not from .npmrc.
+# Registry throughput from this network is low; the default 60 s timeout aborts large tarballs (next, @next/swc).
+fetchTimeout: 1800000
+fetchRetries: 5
+# unrs-resolver ships prebuilt binaries as optional dependencies; its postinstall is only a fallback.
+allowBuilds:
+  unrs-resolver: false

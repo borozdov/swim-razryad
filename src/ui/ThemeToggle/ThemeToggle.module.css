@@ -1,0 +1,53 @@
+/* The icon button of the brand header: 36px, a hairline frame, the icon in slate until hovered. */
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--slate);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.root:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Icon visibility follows the look on <html>, so the right icon shows before hydration. */
+.moon {
+  display: none;
+}
+
+:global([data-theme='titan']) .sun {
+  display: none;
+}
+
+:global([data-theme='titan']) .moon {
+  display: block;
+}
+
+/* 36px is the frame; a finger needs 44. */
+@media (pointer: coarse) {
+  .root {
+    position: relative;
+  }
+
+  .root::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+  }
+}

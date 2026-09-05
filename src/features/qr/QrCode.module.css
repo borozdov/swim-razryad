@@ -1,0 +1,20 @@
+.root {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The two roles of a code. Constant in both looks: see the note in globals.css. */
+.paper {
+  fill: var(--qr-paper);
+}
+
+.ink {
+  fill: var(--qr-ink);
+}
+
+.seal {
+  fill: var(--qr-paper);
+  font-family: var(--font-sans);
+  font-weight: 600;
+}

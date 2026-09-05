@@ -1,0 +1,37 @@
+/* The icon button of the header, the same frame the theme toggle and the QR link wear. */
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--slate);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.root:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* 36px is the frame; a finger needs 44. The zone grows, the frame stays. */
+@media (pointer: coarse) {
+  .root::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+  }
+}

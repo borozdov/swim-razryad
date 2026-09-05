@@ -1,0 +1,116 @@
+/* The modal of fina.borozdov.ru: a scrim with blur, one card, nothing else. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--scrim);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade 0.3s ease both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.card {
+  position: relative;
+  width: 90%;
+  max-width: 340px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  text-align: center;
+  animation: lift 0.3s ease both;
+}
+
+@keyframes lift {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 4px;
+  background: none;
+  border: 0;
+  color: var(--slate);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.close:hover {
+  color: var(--ink);
+}
+
+.title {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.text {
+  margin-bottom: 16px;
+  color: var(--slate);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* What the browser will not do for us, said in the reader's own words. */
+.instruction {
+  padding: 12px;
+  background: var(--inset);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.inlineIcon {
+  width: 16px;
+  height: 16px;
+  margin: 0 4px;
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+/* The brand accent: inversion. */
+.action {
+  width: 100%;
+  padding: 12px;
+  background: var(--ink);
+  border: 0;
+  border-radius: 6px;
+  color: var(--canvas);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.action:hover {
+  filter: brightness(0.85);
+}

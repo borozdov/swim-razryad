@@ -1,0 +1,100 @@
+/* The same reading column as an event page: the two are one layer of the site. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.125rem;
+  line-height: 1.15;
+}
+
+.lead {
+  color: var(--slate);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.subhead {
+  color: var(--slate);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+.pool {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.stroke {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.strokeName {
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* A distance is one tap wide, so the whole pool reads as a keypad and not as a list. */
+.distances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--hairline);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.link:hover {
+  text-decoration-color: var(--ink);
+}

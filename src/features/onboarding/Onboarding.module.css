@@ -1,0 +1,145 @@
+/* Over everything, including the install banner and the toast. */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  animation: fade 0.3s ease both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.spotlight {
+  position: fixed;
+  inset: 0;
+}
+
+/* The dimmed part; the hole in the mask leaves the element itself untouched. */
+.scrim {
+  fill: var(--scrim);
+  cursor: pointer;
+}
+
+/* Placed from JS through variables on the root: no inline styles anywhere in the project. */
+.card {
+  position: fixed;
+  top: var(--tour-top, 50%);
+  left: var(--tour-left, 16px);
+  width: var(--tour-width, 320px);
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  animation: fade 0.3s ease both;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.title {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.skip {
+  padding: 4px 6px;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  color: var(--slate);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.skip:hover {
+  color: var(--ink);
+}
+
+.text {
+  margin-bottom: 14px;
+  color: var(--slate);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+/* Indicator dots, the one round element the system allows. */
+.dot {
+  width: 6px;
+  height: 6px;
+  background: var(--hairline);
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
+}
+
+.dotOn {
+  background: var(--ink);
+}
+
+.buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.prev,
+.next {
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.prev {
+  background: none;
+  border: 1px solid var(--hairline);
+  color: var(--slate);
+}
+
+.prev:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+/* The brand accent: inversion. */
+.next {
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  color: var(--canvas);
+}
+
+.next:hover {
+  filter: brightness(0.85);
+}

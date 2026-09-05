@@ -1,0 +1,36 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+/* Two columns, like the pool and sex row and the stroke and distance row of fina.borozdov.ru. */
+.row {
+  display: grid;
+  flex-shrink: 0;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* The panel of the calculator: the field and its answer on one raised surface. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 0.5rem;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+}
+
+/* The smallest phones: the panel gives its air to the answer. */
+@media (max-height: 600px) {
+  .panel {
+    gap: 4px;
+    padding: 8px;
+  }
+}

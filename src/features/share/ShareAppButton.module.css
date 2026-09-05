@@ -1,0 +1,65 @@
+/* The icon button of the header, the same frame the theme toggle wears. */
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--slate);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.root:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* 36px is the frame; a finger needs 44. The zone grows, the frame stays. */
+@media (pointer: coarse) {
+  .root::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+  }
+}
+
+/* The labelled variant: a plate of the one accent the system allows, inversion. */
+.labelled {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  color: var(--canvas);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.labelled:hover {
+  filter: brightness(0.85);
+}
+
+.labelled .icon {
+  width: 0.8125rem;
+  height: 0.8125rem;
+}

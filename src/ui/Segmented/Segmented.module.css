@@ -1,0 +1,91 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  margin-bottom: 5px;
+  color: var(--slate);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.group {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--inset);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+}
+
+.option {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  color: var(--slate);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.option:focus-visible {
+  outline-offset: -2px;
+}
+
+/* The brand accent: inversion. */
+.active {
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+/* A tap on a phone leaves :hover stuck on the option it left, so hover is a mouse-only rule. */
+@media (hover: hover) {
+  .option:hover {
+    color: var(--ink);
+  }
+
+  .active:hover {
+    background: var(--ink);
+    color: var(--canvas);
+  }
+}
+
+/* The shortest phones: a filter row gives its height back to whatever reads it below. */
+@media (max-height: 600px) {
+  .label {
+    margin-bottom: 2px;
+    font-size: 0.55rem;
+  }
+
+  .option {
+    padding: 5px 4px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Same reason as the chips: the frame stays, the zone under the finger grows. */
+@media (pointer: coarse) {
+  .option {
+    position: relative;
+  }
+
+  .option::after {
+    content: '';
+    position: absolute;
+    inset: -4px -2px;
+  }
+}

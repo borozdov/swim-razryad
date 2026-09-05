@@ -1,0 +1,127 @@
+/* The time row and the quick line of fina.borozdov.ru, in the tokens of this project. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+/* A field with the separator that leads into it, so the three read as one printed time. */
+.field {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.fieldLabel {
+  color: var(--slate);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fieldInput {
+  width: 60px;
+  padding: 9px 2px;
+  background: var(--inset);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.fieldInput::placeholder,
+.quick::placeholder {
+  color: var(--slate);
+}
+
+/* Focus is a second line inside the frame, the way every field of the brand marks it. */
+.fieldInput:focus,
+.quick:focus {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+  outline: none;
+}
+
+.sep {
+  padding-bottom: 8px;
+  color: var(--slate);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/*
+  Exactly 1rem and not a pixel less: iOS Safari zooms into any field under 16px on focus
+  and the layout never comes back. Side padding is tight so the long placeholder stays whole.
+*/
+.quick {
+  width: 100%;
+  padding: 9px 10px;
+  background: var(--inset);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.quick::placeholder {
+  font-family: var(--font-sans);
+}
+
+/* Invalid input is marked by line, not by colour: a dashed ink border. */
+.quick[aria-invalid='true'] {
+  border-color: var(--ink);
+  border-style: dashed;
+}
+
+/* Under 320px the three fields do not fit a row: the gaps give, the size does not. */
+@media (max-width: 319px) {
+  .row,
+  .field {
+    gap: 3px;
+  }
+}
+
+/* The smallest phones: the fields lose some air so the answer keeps its place below. */
+@media (max-height: 600px) {
+  .root {
+    gap: 6px;
+  }
+
+  .fieldInput {
+    padding: 5px 2px;
+    font-size: 1.1rem;
+  }
+
+  .quick {
+    padding: 6px 10px;
+  }
+}

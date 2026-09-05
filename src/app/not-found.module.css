@@ -1,0 +1,13 @@
+.root {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.code {
+  color: var(--slate);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  letter-spacing: 0.16em;
+}

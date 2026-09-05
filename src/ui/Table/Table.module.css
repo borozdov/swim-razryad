@@ -1,0 +1,79 @@
+.wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.table th {
+  padding: 0.75rem 1rem;
+  background: var(--inset);
+  color: var(--slate);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--hairline);
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--hover);
+}
+
+/* Declared on the cells themselves: the plain `th` rule above would otherwise win and pull a head left. */
+.table th.numeric,
+.table td.numeric {
+  text-align: right;
+}
+
+.table td.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Compact: tight cells for a table that has to fit a phone screen whole, nothing to scroll. */
+.compact {
+  font-size: 0.8125rem;
+}
+
+.compact th,
+.compact td {
+  padding: 0.3125rem 0.375rem;
+}
+
+.compact th {
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+}
+
+.compact th:first-child,
+.compact td:first-child {
+  padding-left: 0.625rem;
+}
+
+.compact th:last-child,
+.compact td:last-child {
+  padding-right: 0.625rem;
+}
+
+.compact td.numeric {
+  font-size: 0.75rem;
+}

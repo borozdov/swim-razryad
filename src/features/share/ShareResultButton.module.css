@@ -1,0 +1,34 @@
+/* Sits in the corner of the result plate, quiet until the result is worth sharing. */
+.root {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  color: var(--slate);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.root:hover {
+  color: var(--ink);
+}
+
+.root svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* The frame is 29px; a finger needs 44. The zone grows, the button does not. */
+@media (pointer: coarse) {
+  .root::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+}

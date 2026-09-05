@@ -1,0 +1,53 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.solid {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+}
+
+.solid:hover {
+  background: var(--softened);
+  border-color: var(--softened);
+}
+
+.outline {
+  background: none;
+  border-color: var(--hairline);
+  color: var(--ink);
+}
+
+/* The brand hover gesture: inversion. */
+.outline:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+}
+
+.root:disabled,
+.root:disabled:hover {
+  background: none;
+  border-color: var(--hairline);
+  color: var(--slate);
+  cursor: not-allowed;
+}

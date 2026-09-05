@@ -1,0 +1,235 @@
+/* One card in the middle of an empty screen, the way fina.borozdov.ru/qr/ stands. */
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+
+/* The two corner controls: the way back on the left, the look on the right. */
+.back,
+.theme {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  z-index: 10;
+}
+
+.back {
+  left: max(16px, env(safe-area-inset-left));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  color: var(--slate);
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.back:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.backIcon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.theme {
+  right: max(16px, env(safe-area-inset-right));
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 21.25rem;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.logoTop {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.logoBottom {
+  margin-top: 3px;
+  color: var(--slate);
+  font-size: 0.55rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.15s ease;
+}
+
+.logo:hover .logoBottom {
+  color: var(--ink);
+}
+
+/* The plate the code sits on carries its own quiet zone, so the padding is a frame only. */
+.plate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 15rem;
+  padding: 10px;
+  background: var(--qr-paper);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+}
+
+.info {
+  margin-top: 2px;
+}
+
+.title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  margin-top: 4px;
+  color: var(--slate);
+  font-size: 0.8rem;
+}
+
+/* The address and the share plate stand side by side, never one over the other. */
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 7px 11px;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--softened);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--border);
+  color: var(--ink);
+}
+
+.chipIcon {
+  flex-shrink: 0;
+  width: 0.8125rem;
+  height: 0.8125rem;
+}
+
+/* Narrow phones (320px, the iPhone SE class): the address gives up its globe and its
+   air so it still stands beside the share plate instead of dropping under it. */
+@media (max-width: 360px) {
+  .chip {
+    gap: 0;
+    padding: 7px 4px;
+    font-size: 0.55rem;
+    letter-spacing: 0;
+  }
+
+  .chipIcon {
+    display: none;
+  }
+
+  /* The share plate gives back the width the address needs to print whole. */
+  .actions button {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--hairline);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tag {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--softened);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/*
+  Landscape on a phone. The card lies down: the code takes the left column and the words
+  stack in the right one. A single row would push the chip and the button off the card.
+*/
+@media (max-height: 500px) {
+  .page {
+    padding: 10px;
+  }
+
+  .card {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    grid-template-rows: repeat(5, auto);
+    align-items: center;
+    column-gap: 20px;
+    row-gap: 10px;
+    max-width: 31.25rem;
+    padding: 16px;
+  }
+
+  .plate {
+    grid-area: 1 / 1 / 6 / 2;
+    max-width: none;
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "id": "/",
+  "name": "Разряд",
+  "short_name": "Разряд",
+  "description": "Разрядные нормативы ЕВСК по плаванию и очки разряда.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-mask-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "display_override": ["standalone", "minimal-ui"],
+  "categories": ["sports", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshots/standards.png",
+      "sizes": "480x1040",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Разрядные нормативы ЕВСК по плаванию"
+    },
+    {
+      "src": "/screenshots/calculator.png",
+      "sizes": "480x1040",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Калькулятор разряда по времени"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Нормативы",
+      "short_name": "Нормативы",
+      "url": "/",
+      "description": "Таблица разрядных нормативов выбранной дистанции",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Калькулятор",
+      "short_name": "Калькулятор",
+      "url": "/kalkulyator/",
+      "description": "Разряд и очки по времени заплыва",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

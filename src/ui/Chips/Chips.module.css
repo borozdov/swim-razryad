@@ -1,0 +1,94 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  margin-bottom: 5px;
+  color: var(--slate);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.option {
+  /* Chips share their row and fill it, as in fina-point: every row stands flush. */
+  flex: 1 0 auto;
+  padding: 7px 10px;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  color: var(--slate);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+/* The brand accent: inversion. */
+.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--canvas);
+  font-weight: 600;
+}
+
+/* A tap on a phone leaves :hover stuck on the chip it left, so hover is a mouse-only rule. */
+@media (hover: hover) {
+  .option:hover {
+    border-color: var(--border);
+    color: var(--ink);
+  }
+
+  .active:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--canvas);
+  }
+}
+
+/* The shortest phones: a filter row gives its height back to whatever reads it below. */
+@media (max-height: 600px) {
+  .label {
+    margin-bottom: 2px;
+    font-size: 0.55rem;
+  }
+
+  .option {
+    padding: 4px 6px;
+    font-size: 0.65rem;
+  }
+}
+
+/*
+ * A chip is 30px tall; a finger asks for a little more. The zone grows into the 4px
+ * gap and stops at its half: two zones meet there instead of overlapping. An overlap
+ * handed the lower chip a strip of the upper chip's own face, and the wrong word lit up.
+ */
+@media (pointer: coarse) {
+  .option {
+    position: relative;
+  }
+
+  .option::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+  }
+}
