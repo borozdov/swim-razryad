@@ -10,13 +10,7 @@ import {
   eventLabel,
   lowerFirst,
 } from '@/lib/labels';
-import {
-  CALCULATOR_PATH,
-  HOME_PATH,
-  STANDARDS_ROOT,
-  calculatorPathFor,
-  standardsPath,
-} from '@/lib/routes';
+import { HOME_PATH, STANDARDS_ROOT, appPath, standardsPath } from '@/lib/routes';
 import type { EventRoute } from '@/lib/routes';
 import {
   CAVEATS,
@@ -114,12 +108,12 @@ export function StandardsPage({ event, rows, edition, siblings, otherPool }: Sta
         <h2 className={s.subhead}>Посчитать своё время</h2>
         <ul className={s.list}>
           <li>
-            <Link href={calculatorPathFor(event)} className={s.link}>
+            <Link href={appPath('calculator', event)} className={s.link}>
               Открыть калькулятор на этой дистанции
             </Link>
           </li>
           <li>
-            <Link href={CALCULATOR_PATH} className={s.link}>
+            <Link href={appPath('calculator')} className={s.link}>
               Калькулятор разряда по плаванию
             </Link>
           </li>

@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import type { PointsResult } from '@/domain/standards/types';
 import { trackGoal } from '@/lib/analytics';
-import { CALCULATOR_PATH, type EventRoute } from '@/lib/routes';
-import { SITE_URL } from '@/lib/seo';
+import type { EventRoute } from '@/lib/routes';
 import { Toast } from '@/ui';
 import { drawShareCard } from './drawShareCard';
-import { buildShareCard, shareFileName } from './shareCard';
+import { buildShareCard, shareFileName, shareLink } from './shareCard';
 import s from './ShareResultButton.module.css';
 
 export type ShareResultButtonProps = {
@@ -38,7 +37,7 @@ export function ShareResultButton({ event, result, seconds, query }: ShareResult
   const share = async () => {
     trackGoal('share_result');
     const card = buildShareCard(event, result, seconds);
-    const link = `${SITE_URL}${CALCULATOR_PATH}?${query}`;
+    const link = shareLink(query);
     const text = `${card.rank}: ${card.event}, ${card.time}. Рассчитано в «Разряде».\n\n${link}`;
 
     try {

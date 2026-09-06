@@ -1,16 +1,20 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Calculator } from './Calculator';
+import { CURRENT_EDITION } from '@/domain/standards/registry';
+import { AppScreen } from '@/features/app/AppScreen';
 
 /**
+ * The calculator is one mode of the app and holds no state of its own, so it is exercised
+ * through the screen that owns it, opened on the query a shared link would carry.
+ *
  * The check row of приказ № 1092: men, 50 m pool, freestyle 50 m. I разряд is 25.20,
  * КМС 23.95, МС 23.20, so a swim of 25.20 sits exactly on the I разряд node.
  */
-const CHECK_ROW = '?pool=lcm&stroke=free&distance=50&sex=m';
+const CHECK_ROW = '?mode=calculator&pool=lcm&stroke=free&distance=50&sex=m';
 
 const renderAt = (query: string) => {
   window.history.replaceState(null, '', query);
-  return render(<Calculator />);
+  return render(<AppScreen rows={CURRENT_EDITION.rows} />);
 };
 
 const timeField = () => screen.getByRole('textbox', { name: 'Время' });
@@ -130,7 +134,7 @@ describe('a time the notation does not accept', () => {
 
 describe('the link a result travels as', () => {
   it('restores the whole form from the query', () => {
-    renderAt('?pool=scm&stroke=breast&distance=200&sex=f&time=2:37.45');
+    renderAt('?mode=calculator&pool=scm&stroke=breast&distance=200&sex=f&time=2:37.45');
 
     expect(timeField()).toHaveValue('2:37.45');
     expect(checkedRadio('Бассейн')).toBe('25 м');
@@ -144,7 +148,9 @@ describe('the link a result travels as', () => {
 
     fireEvent.click(screen.getByRole('radio', { name: '25 м' }));
 
-    expect(window.location.search).toBe('?pool=scm&stroke=free&distance=50&sex=m&time=25.20');
+    expect(window.location.search).toBe(
+      '?pool=scm&stroke=free&distance=50&sex=m&mode=calculator&time=25.20',
+    );
   });
 
   it('ignores an age a link from the old form may still carry', () => {

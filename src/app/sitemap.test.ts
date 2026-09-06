@@ -8,24 +8,21 @@ import {
   STANDARDS_ROOT,
   standardsPath,
 } from '@/lib/routes';
+
 import { SITE_URL } from '@/lib/seo';
 import robots from './robots';
 import sitemap from './sitemap';
 
 /**
- * The pages the static export writes that a search engine is meant to see: the two screens
- * of the app, the explainer, and one reference page per event of the edition.
+ * The pages the static export writes that a search engine is meant to see: the app, the
+ * указатель and the explainer, and one reference page per event of the edition.
  * /kitchen-sink answers no search and /qr/ answers a camera, so neither is here.
  */
 const exportedUrls = (): ReadonlySet<string> =>
   new Set(
-    [
-      HOME_PATH,
-      CALCULATOR_PATH,
-      STANDARDS_ROOT,
-      RANKS_PATH,
-      ...listEvents().map(standardsPath),
-    ].map((path) => `${SITE_URL}${path}`),
+    [HOME_PATH, STANDARDS_ROOT, RANKS_PATH, ...listEvents().map(standardsPath)].map(
+      (path) => `${SITE_URL}${path}`,
+    ),
   );
 
 const sitemapUrls = (): readonly string[] => sitemap().map((entry) => entry.url);
@@ -66,6 +63,11 @@ describe('sitemap', () => {
 
   it('leaves out the QR card, which answers a camera and not a search', () => {
     expect(sitemapUrls().some((url) => url.endsWith(QR_PATH))).toBe(false);
+  });
+
+  /* The calculator is a mode of the app and no longer an address: the old one forwards. */
+  it('leaves out the address the calculator used to have', () => {
+    expect(sitemapUrls().some((url) => url.endsWith(CALCULATOR_PATH))).toBe(false);
   });
 });
 

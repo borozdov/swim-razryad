@@ -1,5 +1,5 @@
 /**
- * The URL vocabulary of the site, and the vocabulary the calculator writes its query in.
+ * The URL vocabulary of the site, and the vocabulary the app writes its query in.
  * A slug is the domain value in lower case, so the two never drift apart and no second
  * table has to be kept in sync.
  */
@@ -19,10 +19,13 @@ export type StandardsParams = {
   distance: string;
 };
 
-/** The standards index, the home page: what a swimmer looks up most. */
+/** The app, and its only address: the standards and the calculator are two modes of it. */
 export const HOME_PATH = '/';
 
-/** The calculator, a secondary page. Trailing slash: static hosting serves directories. */
+/**
+ * The address the calculator had while it was a page of its own. It is no longer a screen:
+ * the page at it forwards into the app, because links to it are out in the world.
+ */
 export const CALCULATOR_PATH = '/kalkulyator/';
 
 /** The QR card of the app. A page to point a camera at, not a section of the site. */
@@ -32,6 +35,21 @@ export const QR_PATH = '/qr/';
 export const STANDARDS_ROOT = '/normativy/';
 
 export const RANKS_PATH = '/razryady/';
+
+/**
+ * Which of the two the app stands in. One address means the query has to say, the same way
+ * it says the event: the slug is the value itself, so there is no second table to keep.
+ */
+export type Mode = 'standards' | 'calculator';
+
+const MODES: readonly Mode[] = ['standards', 'calculator'];
+
+/** What the bare address shows, and therefore the only mode a query never has to name. */
+export const DEFAULT_MODE: Mode = 'standards';
+
+/** Null for anything outside the vocabulary, so a hand-written link falls back to the default. */
+export const parseMode = (slug: string | null): Mode | null =>
+  MODES.find((mode) => mode === slug) ?? null;
 
 const POOLS: readonly Pool[] = ['LCM', 'SCM'];
 const STROKES: readonly Stroke[] = ['FREE', 'BACK', 'BREAST', 'FLY', 'MEDLEY'];
@@ -50,12 +68,16 @@ export const standardsPath = (event: EventRoute): string => {
 };
 
 /**
- * The calculator already opened on one event. Sex and time are left out on purpose: the
- * form falls back to its defaults for whatever the query does not name, and a reference
- * page knows the event but not who is reading it.
+ * The app opened in one mode, and on one event when the caller knows which. The default
+ * mode is the bare address, so only the other one is ever named. Sex and time are left out
+ * on purpose: the form falls back to its defaults for whatever the query does not name,
+ * and a reference page knows the event but not who is reading it.
  */
-export const calculatorPathFor = (event: EventRoute): string =>
-  `${CALCULATOR_PATH}?${new URLSearchParams(standardsParams(event)).toString()}`;
+export const appPath = (mode: Mode, event?: EventRoute): string => {
+  const named = event === undefined ? {} : standardsParams(event);
+  const query = new URLSearchParams(mode === DEFAULT_MODE ? named : { mode, ...named }).toString();
+  return query === '' ? HOME_PATH : `${HOME_PATH}?${query}`;
+};
 
 const parsePool = (slug: string): Pool | null =>
   POOLS.find((pool) => pool.toLowerCase() === slug) ?? null;

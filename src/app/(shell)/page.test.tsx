@@ -1,11 +1,20 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { NAV_ITEMS } from '@/lib/nav';
-import { CALCULATOR_PATH, HOME_PATH } from '@/lib/routes';
+import { HOME_PATH, appPath } from '@/lib/routes';
 import HomePage, { metadata } from './page';
 
 /** The one heading of the page, which names whichever event the switches leave visible. */
 const heading = () => screen.getByRole('heading', { level: 1 }).textContent;
+
+/** The checked option of one radio group, by the group's label. */
+const checkedRadio = (label: string): string =>
+  within(screen.getByRole('radiogroup', { name: label })).getByRole('radio', { checked: true })
+    .textContent ?? '';
+
+beforeEach(() => {
+  window.history.replaceState(null, '', HOME_PATH);
+});
 
 describe('standards index page', () => {
   it('shows one distance at a time: the nine ranks down, slow rank first', () => {
@@ -74,15 +83,86 @@ describe('standards index page', () => {
   });
 
   it('assembles the title and an absolute canonical', () => {
-    expect(metadata.title).toBe('Нормативы по плаванию — таблица разрядов ЕВСК');
+    expect(metadata.title).toBe('Нормативы по плаванию и калькулятор разряда ЕВСК');
     expect(String(metadata.alternates?.canonical)).toMatch(/^https:\/\/[^/]+\/$/);
   });
 });
 
-describe('header navigation', () => {
-  it('points every item at a page the export writes', () => {
-    const pages = new Set([HOME_PATH, CALCULATOR_PATH]);
+describe('the two modes on one page', () => {
+  it('shows the table or the calculator, never both', () => {
+    render(<HomePage />);
 
-    expect(NAV_ITEMS.map((item) => item.href).every((href) => pages.has(href))).toBe(true);
+    expect(screen.getAllByRole('table')).toHaveLength(1);
+    expect(screen.queryByRole('textbox', { name: 'Время' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Калькулятор' }));
+
+    expect(screen.queryAllByRole('table')).toHaveLength(0);
+    expect(screen.getByRole('textbox', { name: 'Время' })).toBeInTheDocument();
+  });
+
+  it('keeps every choice the reader made when the mode switches', () => {
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole('radio', { name: '25 м' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Ж' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Брасс' }));
+    fireEvent.click(screen.getByRole('radio', { name: '200м' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Калькулятор' }));
+
+    expect(checkedRadio('Бассейн')).toBe('25 м');
+    expect(checkedRadio('Пол')).toBe('Ж');
+    expect(checkedRadio('Стиль')).toBe('Брасс');
+    expect(checkedRadio('Дистанция')).toBe('200м');
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Нормативы' }));
+
+    expect(heading()).toBe('Брасс 200 м, бассейн 25 м');
+  });
+
+  it('keeps a time typed in the calculator while the table is read', () => {
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Калькулятор' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Время' }), {
+      target: { value: '25.20' },
+    });
+    fireEvent.click(screen.getByRole('tab', { name: 'Нормативы' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Калькулятор' }));
+
+    expect(screen.getByRole('textbox', { name: 'Время' })).toHaveValue('25.20');
+    expect(screen.getByText('I спортивный', { selector: 'p' })).toBeInTheDocument();
+  });
+
+  it('switches the mode without leaving the address, and says so in the query', () => {
+    render(<HomePage />);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Калькулятор' }));
+
+    expect(window.location.pathname).toBe(HOME_PATH);
+    expect(window.location.search).toBe('?pool=lcm&stroke=free&distance=50&sex=m&mode=calculator');
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Нормативы' }));
+
+    expect(window.location.search).toBe('?pool=lcm&stroke=free&distance=50&sex=m');
+  });
+
+  it('opens in the mode the query names', () => {
+    window.history.replaceState(null, '', '?mode=calculator&pool=lcm&stroke=free&distance=50');
+    render(<HomePage />);
+
+    expect(screen.getByRole('tab', { name: 'Калькулятор' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(screen.getByRole('textbox', { name: 'Время' })).toBeInTheDocument();
+  });
+});
+
+describe('the sections of the app', () => {
+  it('gives every item of the switch a mode of the one page, and no address of its own', () => {
+    for (const item of NAV_ITEMS) {
+      expect(new URL(appPath(item.mode), 'https://example.com').pathname).toBe(HOME_PATH);
+    }
   });
 });

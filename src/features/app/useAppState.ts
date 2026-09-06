@@ -12,18 +12,24 @@ import type {
   Stroke,
 } from '@/domain/standards/types';
 import { findStandard, listEvents } from '@/domain/standards/registry';
-import { parseStandardsParams, standardsParams } from '@/lib/routes';
-import type { EventRoute } from '@/lib/routes';
+import { DEFAULT_MODE, parseMode, parseStandardsParams, standardsParams } from '@/lib/routes';
+import type { EventRoute, Mode } from '@/lib/routes';
 
-/** Everything the form holds. The event triple is the same one the URLs of the standards pages name. */
-export type CalculatorState = EventRoute & {
+/**
+ * Everything the app holds: the mode it stands in, the event both modes are about, and
+ * the time only the calculator asks for. One state and not two, because the switch between
+ * the modes must leave the choices under the finger exactly where they were.
+ */
+export type AppState = EventRoute & {
+  mode: Mode;
   sex: Sex;
   /** Raw text as typed. Parsing into seconds lives in domain/points/time.ts. */
   time: string;
 };
 
-/** The check row of the order: men, 50 m pool, freestyle 50 m. */
-export const CALCULATOR_DEFAULTS: CalculatorState = {
+/** The check row of the order: men, 50 m pool, freestyle 50 m, and the table of it. */
+export const APP_DEFAULTS: AppState = {
+  mode: DEFAULT_MODE,
   pool: 'LCM',
   stroke: 'FREE',
   distance: 50,
@@ -40,7 +46,7 @@ export const distancesFor = (pool: Pool, stroke: Stroke): readonly Distance[] =>
     .sort((a, b) => a - b);
 
 /** Snap to a distance the dataset carries: a change of stroke can strand the current one. */
-const withEvent = (state: CalculatorState): CalculatorState => {
+const withEvent = (state: AppState): AppState => {
   const distances = distancesFor(state.pool, state.stroke);
   if (distances.length === 0 || distances.includes(state.distance)) return state;
   return { ...state, distance: distances[0] };
@@ -54,36 +60,42 @@ const parseSex = (slug: string | null): Sex | null => {
   return null;
 };
 
-/** The form state as a query string, so a result travels as a link. */
-export const toQuery = (state: CalculatorState): string => {
+/**
+ * The state as a query string, so a screen travels as a link. The mode is written only
+ * when it is not the default one: the bare address already stands in that one, and the
+ * standards keep the plain URL they had while they were a page.
+ */
+export const toQuery = (state: AppState): string => {
   const { pool, stroke, distance } = standardsParams(state);
   const params = new URLSearchParams({ pool, stroke, distance, sex: SEX_SLUG[state.sex] });
+  if (state.mode !== DEFAULT_MODE) params.set('mode', state.mode);
   if (state.time !== '') params.set('time', state.time);
   return params.toString();
 };
 
 /** Total by construction: anything the vocabulary does not cover falls back to the default. */
-export const fromQuery = (search: string): CalculatorState => {
+export const fromQuery = (search: string): AppState => {
   const params = new URLSearchParams(search);
   const route =
     parseStandardsParams({
       pool: params.get('pool') ?? '',
       stroke: params.get('stroke') ?? '',
       distance: params.get('distance') ?? '',
-    }) ?? CALCULATOR_DEFAULTS;
+    }) ?? APP_DEFAULTS;
 
   return withEvent({
+    mode: parseMode(params.get('mode')) ?? APP_DEFAULTS.mode,
     pool: route.pool,
     stroke: route.stroke,
     distance: route.distance,
-    sex: parseSex(params.get('sex')) ?? CALCULATOR_DEFAULTS.sex,
-    time: params.get('time') ?? CALCULATOR_DEFAULTS.time,
+    sex: parseSex(params.get('sex')) ?? APP_DEFAULTS.sex,
+    time: params.get('time') ?? APP_DEFAULTS.time,
   });
 };
 
-export type Calculator = {
-  state: CalculatorState;
-  update: (patch: Partial<CalculatorState>) => void;
+export type App = {
+  state: AppState;
+  update: (patch: Partial<AppState>) => void;
   /** Distances offered for the current pool and stroke. */
   distances: readonly Distance[];
   /** Null while the text is not a swim time the notation accepts. */
@@ -94,8 +106,8 @@ export type Calculator = {
   standard: StandardRow | undefined;
 };
 
-export function useCalculator(): Calculator {
-  const [state, setState] = useState<CalculatorState>(CALCULATOR_DEFAULTS);
+export function useAppState(): App {
+  const [state, setState] = useState<AppState>(APP_DEFAULTS);
 
   // The URL is read once, after hydration. The prerendered markup always carries the
   // defaults, so reading window.location while rendering would not match it.
@@ -103,9 +115,9 @@ export function useCalculator(): Calculator {
     setState(fromQuery(window.location.search));
   }, []);
 
-  const apply = (next: CalculatorState): void => {
+  const apply = (next: AppState): void => {
     setState(next);
-    // replaceState, not the router: the query is form state, not a navigation.
+    // replaceState, not the router: the query is the state of one page, not a navigation.
     window.history.replaceState(null, '', `?${toQuery(next)}`);
   };
 

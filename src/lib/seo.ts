@@ -5,14 +5,7 @@
 import type { Metadata } from 'next';
 import type { Edition } from '@/domain/standards/types';
 import { eventHeading, formatIsoDate, lowerFirst } from './labels';
-import {
-  CALCULATOR_PATH,
-  HOME_PATH,
-  QR_PATH,
-  RANKS_PATH,
-  STANDARDS_ROOT,
-  standardsPath,
-} from './routes';
+import { HOME_PATH, QR_PATH, RANKS_PATH, STANDARDS_ROOT, standardsPath } from './routes';
 import type { EventRoute } from './routes';
 
 /**
@@ -76,11 +69,11 @@ export const siteMetadata: Metadata = {
   its own answers no query. The year stays out of them: приказ № 1092 carries no end date,
   and a year in a title is a promise to edit the file every January.
 */
-export const standardsIndexMetadata = (edition: Edition): Metadata => {
-  const title = 'Нормативы по плаванию — таблица разрядов ЕВСК';
+export const appMetadata = (edition: Edition): Metadata => {
+  const title = 'Нормативы по плаванию и калькулятор разряда ЕВСК';
   const description = [
-    'Разрядные нормативы ЕВСК по плаванию: все дистанции обоих бассейнов,',
-    'мужчины и женщины, от III юношеского разряда до МСМК.',
+    'Разрядные нормативы ЕВСК по плаванию: оба бассейна, мужчины и женщины,',
+    'от III юношеского разряда до МСМК, и калькулятор разряда по времени заплыва.',
     `Редакция действует с ${formatIsoDate(edition.effectiveFrom)}.`,
   ].join(' ');
   return {
@@ -134,11 +127,16 @@ const CALCULATOR_DESCRIPTION = [
   'а в ответ выполненный разряд, остаток секунд до следующей ступени и очки по шкале 0-1000.',
 ].join(' ');
 
+/**
+ * The address the calculator had while it was a page. It is one mode of the app now, so
+ * this page only forwards there and its canonical points at the app: two addresses
+ * answering one query would compete with each other, and one of them is a doormat.
+ */
 export const calculatorMetadata: Metadata = {
   title: CALCULATOR_TITLE,
   description: CALCULATOR_DESCRIPTION,
-  alternates: { canonical: canonicalUrl(CALCULATOR_PATH) },
-  ...social(CALCULATOR_TITLE, CALCULATOR_DESCRIPTION, CALCULATOR_PATH),
+  alternates: { canonical: canonicalUrl(HOME_PATH) },
+  ...social(CALCULATOR_TITLE, CALCULATOR_DESCRIPTION, HOME_PATH),
 };
 
 const RANKS_TITLE = 'Разряды по плаванию: девять ступеней и что меняет бассейн';

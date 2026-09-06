@@ -5,7 +5,9 @@
 import { formatTime } from '@/domain/points/time';
 import type { PointsResult } from '@/domain/standards/types';
 import { POOL_SHORT_LABEL, RANK_FULL_LABEL, RANK_LABEL, eventLabel } from '@/lib/labels';
+import { HOME_PATH } from '@/lib/routes';
 import type { EventRoute } from '@/lib/routes';
+import { SITE_URL } from '@/lib/seo';
 
 export type ShareCard = {
   /** «Вольный стиль 50 м», the event without the pool. */
@@ -22,6 +24,12 @@ export type ShareCard = {
 };
 
 export const NO_RANK = 'Разряда нет';
+
+/**
+ * The link a shared result travels with: the one address of the app, and the query the
+ * form has already written into the address bar, which names the calculator among the rest.
+ */
+export const shareLink = (query: string): string => `${SITE_URL}${HOME_PATH}?${query}`;
 
 export const buildShareCard = (
   event: EventRoute,

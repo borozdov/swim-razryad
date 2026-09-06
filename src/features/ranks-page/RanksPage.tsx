@@ -5,7 +5,7 @@ import { AuthorLink } from '@/features/site-footer/AuthorLink';
 import { authorUrl } from '@/features/site-footer/SiteFooter';
 import { RANK_FULL_LABEL, RANK_LABEL, formatIsoDate } from '@/lib/labels';
 import { poolSpread, poolSpreadSentence, spreadGrowsSentence } from '@/lib/ranksCopy';
-import { CALCULATOR_PATH, HOME_PATH } from '@/lib/routes';
+import { HOME_PATH, appPath } from '@/lib/routes';
 import { CAVEATS } from '@/lib/standardsCopy';
 import { Breadcrumbs, Table } from '@/ui';
 import s from './RanksPage.module.css';
@@ -100,7 +100,7 @@ export function RanksPage({ edition }: RanksPageProps) {
             </Link>
           </li>
           <li>
-            <Link href={CALCULATOR_PATH} className={s.link}>
+            <Link href={appPath('calculator')} className={s.link}>
               Калькулятор разряда по плаванию
             </Link>
           </li>

@@ -1,35 +1,21 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { NAV_ITEMS } from '@/lib/nav';
-import { CALCULATOR_PATH, HOME_PATH } from '@/lib/routes';
+import { appPath } from '@/lib/routes';
 import s from './SiteNav.module.css';
 
-/** Two sections only: the calculator owns its prefix, the standards index owns the rest. */
-export const isActivePath = (href: string, pathname: string): boolean =>
-  href === CALCULATOR_PATH
-    ? pathname.startsWith(CALCULATOR_PATH)
-    : !pathname.startsWith(CALCULATOR_PATH);
-
-/** Sections switch like the modes of a calculator: one big segmented row, always in view. */
+/**
+ * The way back into the app from a page that is not it: the reference layer and the 404.
+ * Neither item is marked current, because neither is where the reader stands — the app is
+ * one page elsewhere, and these are the two modes it can be opened in.
+ */
 export function SiteNav() {
-  const pathname = usePathname() ?? HOME_PATH;
   return (
-    <nav className={s.root} aria-label="Разделы" data-chrome="nav" data-tour="sections">
-      {NAV_ITEMS.map(({ href, label }) => {
-        const active = isActivePath(href, pathname);
-        return (
-          <Link
-            key={href}
-            href={href}
-            className={active ? `${s.item} ${s.active}` : s.item}
-            aria-current={active ? 'page' : undefined}
-          >
-            {label}
-          </Link>
-        );
-      })}
+    <nav className={s.root} aria-label="Разделы" data-chrome="nav">
+      {NAV_ITEMS.map(({ mode, label }) => (
+        <Link key={mode} href={appPath(mode)} className={s.item}>
+          {label}
+        </Link>
+      ))}
     </nav>
   );
 }

@@ -1,15 +1,18 @@
 /**
- * The header navigation, one line per page. A new page joins the header by adding
- * an item here, never by editing the markup of `layout.tsx`.
+ * The two sections of the app, one line each. A section joins the switch by adding an item
+ * here, never by editing the markup that draws it.
+ *
+ * An item names a mode and not an address, because both modes live at one address: the
+ * switch inside the app sets the mode, and the reference layer links back into it.
  */
-import { CALCULATOR_PATH, HOME_PATH } from './routes';
+import type { Mode } from './routes';
 
 export type NavItem = {
-  href: string;
+  mode: Mode;
   label: string;
 };
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  { href: HOME_PATH, label: 'Нормативы' },
-  { href: CALCULATOR_PATH, label: 'Калькулятор' },
+  { mode: 'standards', label: 'Нормативы' },
+  { mode: 'calculator', label: 'Калькулятор' },
 ];

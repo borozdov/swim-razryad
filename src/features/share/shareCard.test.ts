@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { calculate } from '@/domain/points/calculate';
 import type { EventRoute } from '@/lib/routes';
-import { NO_RANK, buildShareCard, shareFileName } from './shareCard';
+import { HOME_PATH } from '@/lib/routes';
+import { SITE_URL } from '@/lib/seo';
+import { NO_RANK, buildShareCard, shareFileName, shareLink } from './shareCard';
 
 /** The check row of приказ № 1092: men, 50 m pool, freestyle 50 m. I разряд is 25.20. */
 const EVENT: EventRoute = { pool: 'LCM', stroke: 'FREE', distance: 50 };
@@ -34,5 +36,13 @@ describe('the card a result is shared as', () => {
 
   it('names the saved file after the swim, with no character a file system refuses', () => {
     expect(shareFileName(cardFor(64.6))).toBe('razryad-1-04-60.png');
+  });
+
+  /* One address for the app: the shared link reopens the result on it, in the calculator. */
+  it('links back to the app, carrying the query the form wrote', () => {
+    const query = 'pool=lcm&stroke=free&distance=50&sex=m&mode=calculator&time=25.20';
+
+    expect(shareLink(query)).toBe(`${SITE_URL}${HOME_PATH}?${query}`);
+    expect(shareLink(query)).not.toContain('kalkulyator');
   });
 });

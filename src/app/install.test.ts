@@ -198,7 +198,9 @@ describe('what a tab and a home screen ask for by name', () => {
     looked at it — a tab strip or a home screen.
   */
   it('draws the application icons the same way round as the favicon', () => {
-    expect(pngPixel('../../public/icons/icon-512.png', 4, 4)).toBe(declaredRole('titan', 'surface'));
+    expect(pngPixel('../../public/icons/icon-512.png', 4, 4)).toBe(
+      declaredRole('titan', 'surface'),
+    );
     expect(pngPixel('../../public/apple-touch-icon.png', 4, 4)).toBe(
       declaredRole('titan', 'surface'),
     );
@@ -221,10 +223,11 @@ describe('what a store front and a launch need', () => {
     }
   });
 
-  it('opens either section straight from the home screen', () => {
+  /* Both shortcuts open the one page of the app; the second one names the mode it wants. */
+  it('opens either mode straight from the home screen', () => {
     expect((manifest.shortcuts ?? []).map((shortcut) => shortcut.url)).toEqual([
       '/',
-      '/kalkulyator/',
+      '/?mode=calculator',
     ]);
   });
 

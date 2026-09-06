@@ -1,7 +1,6 @@
 /*
-  The heading sits between the controls and the table as a flex item of its own, so the
-  gap here is the one that used to live inside a pane, and the controls carry the wider
-  one below them. A hidden pane is display: none and creates no gap.
+  The heading sits above the table as a flex item of its own, so the gap here is the one
+  that used to live inside a pane. A hidden pane is display: none and creates no gap.
 */
 .root {
   display: flex;
@@ -9,20 +8,6 @@
   flex: 1;
   min-height: 0;
   gap: min(0.375rem, 0.9dvh);
-}
-
-.controls {
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  gap: min(0.5rem, 1.2dvh);
-  margin-bottom: min(0.375rem, 0.9dvh);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
 }
 
 .pane {

@@ -1,0 +1,24 @@
+/*
+  The one screen of the app: the switch, the four choices both modes are about, and the
+  mode that is showing. The mode that is not is display: none and costs no height, so the
+  screen is the height of whichever one is up.
+*/
+.root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: min(0.5rem, 1.2dvh);
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* display: flex would beat the hidden attribute; only the mode showing may show. */
+.pane[hidden] {
+  display: none;
+}

@@ -1,0 +1,13 @@
+/* Two rows of two, the shape both modes had while they were two screens. */
+.root {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: min(0.5rem, 1.2dvh);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

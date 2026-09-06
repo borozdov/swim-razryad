@@ -1,49 +1,46 @@
 'use client';
 
-import type { ReactNode } from 'react';
 import type { Distance, Pool, Sex, Stroke } from '@/domain/standards/types';
 import { trackGoal, type Goal } from '@/lib/analytics';
 import { POOL_SHORT_LABEL, SEX_SHORT_LABEL, STROKE_SHORT_LABEL } from '@/lib/labels';
-import { Chips, Segmented, TimeInput } from '@/ui';
-import type { CalculatorState } from './useCalculator';
-import s from './CalculatorForm.module.css';
+import { Chips, Segmented } from '@/ui';
+import type { AppState } from './useAppState';
+import s from './EventPicker.module.css';
 
 const POOLS: readonly Pool[] = ['SCM', 'LCM'];
-const STROKES: readonly Stroke[] = ['FREE', 'BACK', 'BREAST', 'FLY', 'MEDLEY'];
 const SEXES: readonly Sex[] = ['M', 'F'];
+const STROKES: readonly Stroke[] = ['FREE', 'BACK', 'BREAST', 'FLY', 'MEDLEY'];
 
 const POOL_OPTIONS = POOLS.map((pool) => ({ value: pool, label: POOL_SHORT_LABEL[pool] }));
+const SEX_OPTIONS = SEXES.map((sex) => ({ value: sex, label: SEX_SHORT_LABEL[sex] }));
 const STROKE_OPTIONS = STROKES.map((stroke) => ({
   value: stroke,
   label: STROKE_SHORT_LABEL[stroke],
 }));
-const SEX_OPTIONS = SEXES.map((sex) => ({ value: sex, label: SEX_SHORT_LABEL[sex] }));
 
-/* The standards screen fires the same four goals, so each one names the screen it is on. */
-const report = (goal: Goal, value: string | number): void => {
-  trackGoal(goal, { where: 'calculator', value: String(value) });
-};
-
-export type CalculatorFormProps = {
-  state: CalculatorState;
+export type EventPickerProps = {
+  state: AppState;
   distances: readonly Distance[];
-  invalid: boolean;
-  onChange: (patch: Partial<CalculatorState>) => void;
-  /** The result, shown inside the same panel as the field, right under it. */
-  children: ReactNode;
+  onChange: (patch: Partial<AppState>) => void;
 };
 
-/** Every choice is one tap and always in view; the time is the only thing typed. */
-export function CalculatorForm({
-  state,
-  distances,
-  invalid,
-  onChange,
-  children,
-}: CalculatorFormProps) {
+/**
+ * The four choices both modes are about, above the mode that is showing. One row of
+ * controls and not one per mode: they are the same four choices, and a switch of mode
+ * leaves them where they stand, unmounted by nothing.
+ *
+ * The same four goals fire from either mode, so each one names the mode it was tapped in;
+ * without that the taps of a reader reading the table and of one entering a time would be
+ * indistinguishable in Metrika.
+ */
+export function EventPicker({ state, distances, onChange }: EventPickerProps) {
+  const report = (goal: Goal, value: string | number): void => {
+    trackGoal(goal, { where: state.mode, value: String(value) });
+  };
+
   return (
     <div className={s.root}>
-      <div className={s.row}>
+      <div className={s.row} data-tour="event">
         <Segmented
           value={state.pool}
           options={POOL_OPTIONS}
@@ -66,7 +63,7 @@ export function CalculatorForm({
         />
       </div>
 
-      <div className={s.row}>
+      <div className={s.row} data-tour="stroke">
         <Chips
           value={state.stroke}
           options={STROKE_OPTIONS}
@@ -87,16 +84,6 @@ export function CalculatorForm({
           label="Дистанция"
           name="distance"
         />
-      </div>
-
-      <div className={s.panel}>
-        <TimeInput
-          value={state.time}
-          onChange={(time) => onChange({ time })}
-          invalid={invalid}
-          name="time"
-        />
-        {children}
       </div>
     </div>
   );

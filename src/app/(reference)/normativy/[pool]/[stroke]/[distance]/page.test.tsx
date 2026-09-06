@@ -62,7 +62,7 @@ describe('one event of the order', () => {
     expect(hrefs).toContain('/normativy/scm/breast/50/');
     expect(hrefs).toContain('/normativy/scm/breast/200/');
     expect(hrefs).toContain('/normativy/lcm/breast/100/');
-    expect(hrefs).toContain('/kalkulyator/?pool=scm&stroke=breast&distance=100');
+    expect(hrefs).toContain('/?mode=calculator&pool=scm&stroke=breast&distance=100');
   });
 
   it('assembles a title and an absolute canonical of its own', async () => {

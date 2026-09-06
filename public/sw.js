@@ -7,12 +7,16 @@
 
   Bump CACHE_NAME to drop every old cache at once.
 */
-const CACHE_NAME = 'razryad-v5';
+const CACHE_NAME = 'razryad-v6';
 
-/** The app shell: every page of the site plus what a browser needs to install it. */
+/**
+ * The app shell: the app itself, which is one page with both of its modes, the QR card,
+ * and what a browser needs to install them. /kalkulyator/ is not here any more: it is the
+ * old address of a mode and only forwards, and an unreachable forward falls back to the
+ * shell below, which is the app anyway.
+ */
 const PRECACHE = [
   '/',
-  '/kalkulyator/',
   '/qr/',
   '/manifest.webmanifest',
   '/icons/icon-192.png',

@@ -65,7 +65,7 @@
     {
       "name": "Калькулятор",
       "short_name": "Калькулятор",
-      "url": "/kalkulyator/",
+      "url": "/?mode=calculator",
       "description": "Разряд и очки по времени заплыва",
       "icons": [
         {

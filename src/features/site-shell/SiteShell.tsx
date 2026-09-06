@@ -16,6 +16,12 @@ import s from './SiteShell.module.css';
 export type SiteShellProps = {
   children: ReactNode;
   /**
+   * The row under the header. The app draws its own there, inside the screen, because the
+   * row switches its panes and has to sit over the same state; every other page gets the
+   * links back into the app.
+   */
+  nav?: ReactNode;
+  /**
    * `screen` is the app: it fits the viewport whole and nothing scrolls. `page` is the
    * reference layer, prose and tables read from top to bottom. globals.css keys the
    * one-screen rule off the attribute this sets, because the root layout cannot tell
@@ -25,11 +31,11 @@ export type SiteShellProps = {
 };
 
 /**
- * The chrome around a section of the site: wordmark, the two switches, the sections and
+ * The chrome around a page of the site: wordmark, the two switches, the sections row and
  * the footer. A component and not the layout of the group, because the 404 page renders
  * off the root layout and has to wear the same chrome.
  */
-export function SiteShell({ children, flow = 'screen' }: SiteShellProps) {
+export function SiteShell({ children, flow = 'screen', nav = <SiteNav /> }: SiteShellProps) {
   return (
     <InstallProvider>
       <div
@@ -47,7 +53,7 @@ export function SiteShell({ children, flow = 'screen' }: SiteShellProps) {
             <ThemeToggle />
           </div>
         </header>
-        <SiteNav />
+        {nav}
         <main className={s.main}>{children}</main>
         <SiteFooter />
       </div>

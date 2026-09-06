@@ -24,8 +24,16 @@ describe('service worker', () => {
     const precache = stringArray('PRECACHE');
 
     expect(precache).toContain(HOME_PATH);
-    expect(precache).toContain(CALCULATOR_PATH);
     expect(precache).toContain(QR_PATH);
+  });
+
+  /*
+    The app is one page with both of its modes, so the shell is one page. The address the
+    calculator used to have only forwards, and an unreachable forward already falls back
+    to the shell, which is the app.
+  */
+  it('leaves the old address of the calculator out of the shell', () => {
+    expect(stringArray('PRECACHE')).not.toContain(CALCULATOR_PATH);
   });
 
   it('precaches what a browser needs to install the app', () => {
