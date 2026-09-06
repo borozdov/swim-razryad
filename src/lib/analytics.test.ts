@@ -61,6 +61,18 @@ describe('analytics', () => {
     expect(() => trackGoal('to_site')).not.toThrow();
   });
 
+  /*
+    The one thing that makes the loader a script is that a browser can parse it, and no
+    assertion about its text can see that. While the build was eating the eight characters
+    between the two counter numbers, `id=12345` and `ym(12345,'init'` were both still in
+    the string and the checks below stayed green over a counter that never started. This
+    guards the source; the export is guarded by scripts/check-build.mjs, which is where the
+    loader actually broke.
+  */
+  it('parses as JavaScript', () => {
+    expect(() => new Function(metrikaScript(12345))).not.toThrow();
+  });
+
   it('builds a loader that carries the counter it was given', () => {
     const script = metrikaScript(12345);
 

@@ -52,10 +52,11 @@ export const trackGoal = (goal: Goal, params?: Params): void => {
  * Metrika has to wait for. The options Yandex's panel also emits are left out: `referrer`
  * and `url` are exactly what the counter reads by itself when they are absent, and
  * `ecommerce` would wire up a dataLayer nothing in this app ever writes to.
+ *
+ * One template literal, one line, and it stays that way. Written as five of them joined by
+ * `+`, the loader shipped broken: the build folds a concatenation into a single constant,
+ * and folding it dropped the `','ym');` between the two counter numbers. The browser then
+ * met `id=112301819ym(` and threw out the whole script, so the counter never started.
  */
 export const metrikaScript = (id: number): string =>
-  `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};` +
-  `m[i].l=1*new Date();for(var j=0;j<e.scripts.length;j++){if(e.scripts[j].src===r){return}}` +
-  `k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})` +
-  `(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${id}','ym');` +
-  `ym(${id},'init',{ssr:true,webvisor:true,clickmap:true,accurateTrackBounce:true,trackLinks:true});`;
+  `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<e.scripts.length;j++){if(e.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${id}','ym');ym(${id},'init',{ssr:true,webvisor:true,clickmap:true,accurateTrackBounce:true,trackLinks:true});`;
