@@ -9,8 +9,9 @@ export type GoalOnViewProps = {
 
 /**
  * Reports a goal once the page is on screen, with the path it was reached at. For the
- * 404 page: the host answers an unknown address with a page and not a status Metrika
- * can see, so without this a broken link reads as an ordinary visit.
+ * 404 page: the host answers an unknown address with a real 404, but the counter runs in
+ * the page and never sees the status, so without this a broken link reads as an
+ * ordinary visit.
  */
 export function GoalOnView({ goal }: GoalOnViewProps) {
   useEffect(() => {
