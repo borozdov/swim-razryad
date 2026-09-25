@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { RANK_MIN_AGE, RANK_ORDER } from '@/domain/points/scale';
 import type { Edition } from '@/domain/standards/types';
+import { GoalLink } from '@/features/goals/GoalLink';
 import { AuthorLink } from '@/features/site-footer/AuthorLink';
 import { authorUrl } from '@/features/site-footer/SiteFooter';
 import { RANK_FULL_LABEL, RANK_LABEL, formatIsoDate } from '@/lib/labels';
@@ -95,23 +95,39 @@ export function RanksPage({ edition }: RanksPageProps) {
         <h2 className={s.subhead}>Дальше</h2>
         <ul className={s.list}>
           <li>
-            <Link href={HOME_PATH} className={s.link}>
+            <GoalLink
+              href={HOME_PATH}
+              goal="to_app"
+              params={{ from: 'ranks', to: 'standards' }}
+              className={s.link}
+            >
               Таблица нормативов по всем дистанциям
-            </Link>
+            </GoalLink>
           </li>
           <li>
-            <Link href={appPath('calculator')} className={s.link}>
+            <GoalLink
+              href={appPath('calculator')}
+              goal="to_app"
+              params={{ from: 'ranks', to: 'calculator' }}
+              className={s.link}
+            >
               Калькулятор разряда по плаванию
-            </Link>
+            </GoalLink>
           </li>
         </ul>
       </section>
 
       <p className={s.source}>
         Источник:{' '}
-        <a href={edition.order} className={s.link} rel="nofollow noopener">
+        <GoalLink
+          href={edition.order}
+          goal="open_order"
+          params={{ from: 'ranks' }}
+          className={s.link}
+          rel="nofollow noopener"
+        >
           приказ Минспорта России № 1092
-        </a>
+        </GoalLink>
         , приложение № 1; минимальный возраст, пункт 3 приложения № 19 к приказу № 999.
       </p>
     </article>

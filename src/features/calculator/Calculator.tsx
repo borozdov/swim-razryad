@@ -62,6 +62,21 @@ export function Calculator({ state, seconds, result, standard, onTimeChange }: C
     return () => clearTimeout(timer);
   }, [points, rank, mode, pool, sex, stroke, distance]);
 
+  /*
+    A time the parser refused and the swimmer stopped on: the notation they tried is one
+    the field does not read yet. Same quiet period as above, and only the length goes out,
+    never the text itself.
+  */
+  const typed = time.length;
+  useEffect(() => {
+    if (!unreadable || mode !== 'calculator') return;
+    const timer = setTimeout(
+      () => trackGoal('calc_time_unreadable', { length: typed }),
+      SETTLED_MS,
+    );
+    return () => clearTimeout(timer);
+  }, [unreadable, typed, mode]);
+
   return (
     <div className={s.root}>
       <TimeInput value={time} onChange={onTimeChange} invalid={unreadable} name="time" />

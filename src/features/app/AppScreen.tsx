@@ -4,6 +4,7 @@ import type { StandardRow } from '@/domain/standards/types';
 import { Calculator } from '@/features/calculator/Calculator';
 import { ModeSwitch, modePaneId, modeTabId } from '@/features/site-nav/ModeSwitch';
 import { StandardsIndex } from '@/features/standards-index/StandardsIndex';
+import { trackGoal } from '@/lib/analytics';
 import { EventPicker } from './EventPicker';
 import { useAppState } from './useAppState';
 import s from './AppScreen.module.css';
@@ -24,7 +25,14 @@ export function AppScreen({ rows }: AppScreenProps) {
 
   return (
     <div className={s.root}>
-      <ModeSwitch mode={mode} onChange={(next) => update({ mode: next })} />
+      <ModeSwitch
+        mode={mode}
+        onChange={(next) => {
+          // A tap on the tab already shown changes nothing and is not a switch.
+          if (next !== mode) trackGoal('switch_mode', { to: next });
+          update({ mode: next });
+        }}
+      />
       <EventPicker state={state} distances={distances} onChange={update} />
 
       <div

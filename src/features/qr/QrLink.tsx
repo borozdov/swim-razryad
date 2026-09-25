@@ -1,11 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { trackGoal } from '@/lib/analytics';
 import { QR_PATH } from '@/lib/routes';
 import s from './QrLink.module.css';
 
-/** The way into the QR card, an icon in the header the way fina.borozdov.ru carries it. */
+/**
+ * The way into the QR card, an icon in the header the way fina.borozdov.ru carries it.
+ * A client island only for the goal: the card itself is also reached by typing /qr/.
+ */
 export function QrLink() {
   return (
-    <Link href={QR_PATH} className={s.root} aria-label="QR-код приложения" title="QR-код">
+    <Link
+      href={QR_PATH}
+      className={s.root}
+      aria-label="QR-код приложения"
+      title="QR-код"
+      onClick={() => trackGoal('open_qr')}
+    >
       <svg
         className={s.icon}
         viewBox="0 0 24 24"

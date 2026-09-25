@@ -12,6 +12,8 @@ import type {
   Stroke,
 } from '@/domain/standards/types';
 import { findStandard, listEvents } from '@/domain/standards/registry';
+import { cameFromShare } from '@/features/share/shareCard';
+import { trackGoal } from '@/lib/analytics';
 import { DEFAULT_MODE, parseMode, parseStandardsParams, standardsParams } from '@/lib/routes';
 import type { EventRoute, Mode } from '@/lib/routes';
 
@@ -112,7 +114,11 @@ export function useAppState(): App {
   // The URL is read once, after hydration. The prerendered markup always carries the
   // defaults, so reading window.location while rendering would not match it.
   useEffect(() => {
-    setState(fromQuery(window.location.search));
+    const restored = fromQuery(window.location.search);
+    setState(restored);
+    if (cameFromShare(window.location.search)) {
+      trackGoal('open_shared_result', { mode: restored.mode });
+    }
   }, []);
 
   const apply = (next: AppState): void => {

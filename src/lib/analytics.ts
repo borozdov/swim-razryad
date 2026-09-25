@@ -7,26 +7,43 @@
  * index, and Yandex says so outright. Indexing is covered by the sitemap.
  *
  * Goal names match fina.borozdov.ru where the two apps do the same thing, because a goal
- * in Metrika matches on the exact string and renaming one loses its history.
+ * in Metrika matches on the exact string and renaming one loses its history. Every name
+ * below has a goal of type action in the counter, listed in ANALYTICS.md: a name reported
+ * here and missing there reaches Metrika and shows up in no report.
  */
 export const METRIKA_ID: number | null = 112301819;
 
 export type Goal =
   | 'theme_toggle'
+  | 'switch_mode'
   | 'select_pool'
   | 'select_sex'
   | 'select_stroke'
   | 'select_distance'
   | 'calc_time_to_points'
+  | 'calc_time_unreadable'
   | 'share_result'
   | 'share_app'
+  | 'share_done'
+  | 'open_shared_result'
+  | 'open_qr'
+  | 'onboarding_start'
   | 'onboarding_next'
   | 'onboarding_prev'
   | 'onboarding_finish'
   | 'install_open'
+  | 'install_modal_close'
+  | 'install_banner_shown'
   | 'install_banner_action'
+  | 'install_banner_close'
   | 'install_banner_never'
+  | 'install_choice'
   | 'pwa_installed'
+  | 'pwa_launch'
+  | 'sw_update'
+  | 'to_app'
+  | 'open_order'
+  | 'page_not_found'
   | 'to_site';
 
 type Params = Record<string, string | number>;

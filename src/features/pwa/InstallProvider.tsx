@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { trackGoal } from '@/lib/analytics';
-import { INSTALL_NEVER_KEY, isIos, isStandalone, shouldOffer } from '@/lib/install';
+import { INSTALL_NEVER_KEY, PWA_LAUNCH_KEY, isIos, isStandalone, shouldOffer } from '@/lib/install';
 import { shouldRunTour } from '@/lib/onboarding';
 
 /** The event Chrome fires instead of showing its own prompt. It is not in lib.dom yet. */
@@ -53,7 +53,18 @@ export function InstallProvider({ children }: { children: ReactNode }) {
     const environment = { standalone: isStandalone(window), ios: isIos(navigator) };
     setStandalone(environment.standalone);
     setIos(environment.ios);
-    if (environment.standalone) return;
+    if (environment.standalone) {
+      // Once per session: the app from the home screen is a launch, its later pages are not.
+      try {
+        if (sessionStorage.getItem(PWA_LAUNCH_KEY) === null) {
+          sessionStorage.setItem(PWA_LAUNCH_KEY, '1');
+          trackGoal('pwa_launch');
+        }
+      } catch {
+        // No storage to remember it with; better a launch missed than one counted per page.
+      }
+      return;
+    }
 
     const onBeforeInstall = (event: Event) => {
       // Keep the event: Chrome only lets it be used later if its own prompt was suppressed.
@@ -77,7 +88,10 @@ export function InstallProvider({ children }: { children: ReactNode }) {
     const welcome = shouldRunTour(localStorage);
     const timer =
       shouldOffer(localStorage, environment) && !welcome
-        ? window.setTimeout(() => setOffered(true), DELAY_MS)
+        ? window.setTimeout(() => {
+            trackGoal('install_banner_shown');
+            setOffered(true);
+          }, DELAY_MS)
         : undefined;
 
     return () => {
@@ -91,6 +105,7 @@ export function InstallProvider({ children }: { children: ReactNode }) {
     if (prompt === null) return;
     await prompt.prompt();
     const { outcome } = await prompt.userChoice;
+    trackGoal('install_choice', { outcome });
     setPrompt(null);
     if (outcome === 'accepted') {
       setOffered(false);

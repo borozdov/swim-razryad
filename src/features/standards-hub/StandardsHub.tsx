@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Event } from '@/domain/standards/registry';
 import type { Edition, Pool, Stroke } from '@/domain/standards/types';
+import { GoalLink } from '@/features/goals/GoalLink';
 import { POOL_LABEL, STROKE_LABEL, formatIsoDate, plural } from '@/lib/labels';
 import { HOME_PATH, RANKS_PATH, appPath, standardsPath } from '@/lib/routes';
 import { Breadcrumbs } from '@/ui';
@@ -68,9 +69,14 @@ export function StandardsHub({ events, edition }: StandardsHubProps) {
             </Link>
           </li>
           <li>
-            <Link href={appPath('calculator')} className={s.link}>
+            <GoalLink
+              href={appPath('calculator')}
+              goal="to_app"
+              params={{ from: 'hub', to: 'calculator' }}
+              className={s.link}
+            >
               Калькулятор разряда по плаванию
-            </Link>
+            </GoalLink>
           </li>
         </ul>
       </section>

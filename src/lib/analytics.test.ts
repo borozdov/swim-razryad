@@ -15,19 +15,23 @@ const sourceFiles = (dir: string): string[] =>
     return [path];
   });
 
-/** Everything in the app that reports a goal, as one blob of text. */
+/**
+ * Everything in the app that reports a goal, as one blob of text: the direct calls, and
+ * the pages that hand a goal to GoalLink or GoalOnView as a prop.
+ */
 const reporters = sourceFiles(SRC)
   .map((path) => readFileSync(path, 'utf8'))
-  .filter((text) => text.includes('trackGoal'))
+  .filter((text) => text.includes('trackGoal') || text.includes('goal="'))
   .join('\n');
+
+const isReported = (goal: string): boolean =>
+  reporters.includes(`'${goal}'`) || reporters.includes(`goal="${goal}"`);
 
 /** The union in analytics.ts, read from the file so the two can never drift apart. */
 const declaredGoals = (): string[] => {
   const source = readFileSync(join(SRC, 'lib/analytics.ts'), 'utf8');
-  const union = source.slice(
-    source.indexOf('export type Goal'),
-    source.indexOf("| 'to_site';") + 12,
-  );
+  const start = source.indexOf('export type Goal');
+  const union = source.slice(start, source.indexOf(';', start));
   return [...union.matchAll(/'([a-z_]+)'/g)].map((match) => match[1]);
 };
 
@@ -91,13 +95,25 @@ describe('analytics', () => {
   and it looks exactly like a goal that nobody reaches. This is what keeps the union honest.
 */
 describe('every goal the app declares', () => {
-  it('finds all sixteen of them', () => {
-    expect(declaredGoals()).toHaveLength(16);
+  it('finds all thirty-one of them', () => {
+    expect(declaredGoals()).toHaveLength(31);
   });
 
   it('is reported from somewhere in the app', () => {
-    const unfired = declaredGoals().filter((goal) => !reporters.includes(`'${goal}'`));
+    const unfired = declaredGoals().filter((goal) => !isReported(goal));
 
     expect(unfired).toEqual([]);
+  });
+
+  /*
+    A goal the app reports and the counter has no goal for reaches Metrika and shows up in
+    no conversion report. The counter cannot be read from here; ANALYTICS.md is the list
+    it was set up from, so every name has to have its row there.
+  */
+  it('has its row in ANALYTICS.md', () => {
+    const registry = readFileSync(resolve(process.cwd(), 'ANALYTICS.md'), 'utf8');
+    const unlisted = declaredGoals().filter((goal) => !registry.includes(`| \`${goal}\` |`));
+
+    expect(unlisted).toEqual([]);
   });
 });

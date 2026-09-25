@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { GoalOnView } from '@/features/goals/GoalOnView';
 import { SiteShell } from '@/features/site-shell/SiteShell';
 import s from './not-found.module.css';
 
@@ -10,6 +11,7 @@ export default function NotFound() {
         <span className={s.code}>404</span>
         <h1>Страницы нет</h1>
         <Link href="/">На главную</Link>
+        <GoalOnView goal="page_not_found" />
       </div>
     </SiteShell>
   );

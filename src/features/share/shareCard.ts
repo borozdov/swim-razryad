@@ -25,11 +25,22 @@ export type ShareCard = {
 
 export const NO_RANK = 'Разряда нет';
 
+/** The source a shared result is marked with, so the opening can be told from a reload. */
+export const SHARE_SOURCE = 'share';
+
 /**
  * The link a shared result travels with: the one address of the app, and the query the
  * form has already written into the address bar, which names the calculator among the rest.
+ *
+ * The UTM pair on the end is read twice. Metrika files the visit under its source by
+ * itself, and the app reports `open_shared_result` when it finds it. The query codec
+ * ignores both keys, and the first change of the form drops them from the address bar.
  */
-export const shareLink = (query: string): string => `${SITE_URL}${HOME_PATH}?${query}`;
+export const shareLink = (query: string): string =>
+  `${SITE_URL}${HOME_PATH}?${query}&utm_source=${SHARE_SOURCE}&utm_medium=result`;
+
+export const cameFromShare = (search: string): boolean =>
+  new URLSearchParams(search).get('utm_source') === SHARE_SOURCE;
 
 export const buildShareCard = (
   event: EventRoute,

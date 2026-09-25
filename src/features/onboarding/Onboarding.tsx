@@ -53,7 +53,11 @@ export function Onboarding() {
     if (!shouldRunTour(localStorage)) return;
     const timer = window.setTimeout(() => {
       // Nothing to point at means the wrong page for this tour; it waits for the right one.
-      if (TOUR_STEPS.every((tour) => findTarget(tour.target) !== null) && place(0)) setStep(0);
+      if (TOUR_STEPS.every((tour) => findTarget(tour.target) !== null) && place(0)) {
+        // The start is what the finish is counted against: how many saw the tour at all.
+        trackGoal('onboarding_start');
+        setStep(0);
+      }
     }, DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [place]);

@@ -6,6 +6,9 @@
 /** Remembered only when the reader says never; closing the banner is a decision for one visit. */
 export const INSTALL_NEVER_KEY = 'razryad.install.never';
 
+/** Session storage: set on the first page of a home-screen launch, so the goal fires once. */
+export const PWA_LAUNCH_KEY = 'razryad.pwa.launch';
+
 export type InstallEnvironment = {
   standalone: boolean;
   ios: boolean;

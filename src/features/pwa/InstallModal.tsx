@@ -12,6 +12,11 @@ export function InstallModal() {
   const install = useInstall();
   if (install === null || !install.modal || install.standalone) return null;
 
+  const close = (via: 'cross' | 'overlay') => {
+    trackGoal('install_modal_close', { via });
+    install.closeModal();
+  };
+
   return (
     <div
       className={s.overlay}
@@ -20,11 +25,16 @@ export function InstallModal() {
       aria-label="Установить приложение"
       onClick={(event) => {
         // A tap on the scrim closes; a tap on the card must not.
-        if (event.target === event.currentTarget) install.closeModal();
+        if (event.target === event.currentTarget) close('overlay');
       }}
     >
       <div className={s.card}>
-        <button type="button" className={s.close} onClick={install.closeModal} aria-label="Закрыть">
+        <button
+          type="button"
+          className={s.close}
+          onClick={() => close('cross')}
+          aria-label="Закрыть"
+        >
           ×
         </button>
         <h3 className={s.title}>Установить приложение</h3>

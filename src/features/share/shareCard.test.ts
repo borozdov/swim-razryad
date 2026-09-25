@@ -3,7 +3,8 @@ import { calculate } from '@/domain/points/calculate';
 import type { EventRoute } from '@/lib/routes';
 import { HOME_PATH } from '@/lib/routes';
 import { SITE_URL } from '@/lib/seo';
-import { NO_RANK, buildShareCard, shareFileName, shareLink } from './shareCard';
+import { fromQuery } from '@/features/app/useAppState';
+import { NO_RANK, buildShareCard, cameFromShare, shareFileName, shareLink } from './shareCard';
 
 /** The check row of приказ № 1092: men, 50 m pool, freestyle 50 m. I разряд is 25.20. */
 const EVENT: EventRoute = { pool: 'LCM', stroke: 'FREE', distance: 50 };
@@ -42,7 +43,22 @@ describe('the card a result is shared as', () => {
   it('links back to the app, carrying the query the form wrote', () => {
     const query = 'pool=lcm&stroke=free&distance=50&sex=m&mode=calculator&time=25.20';
 
-    expect(shareLink(query)).toBe(`${SITE_URL}${HOME_PATH}?${query}`);
+    expect(shareLink(query)).toBe(
+      `${SITE_URL}${HOME_PATH}?${query}&utm_source=share&utm_medium=result`,
+    );
     expect(shareLink(query)).not.toContain('kalkulyator');
+  });
+
+  /*
+    The mark that tells an opened share from a reload rides on the link and nowhere else,
+    and it must not bend what the link reopens.
+  */
+  it('marks the link as a share without changing the screen it reopens', () => {
+    const query = 'pool=scm&stroke=back&distance=100&sex=f&mode=calculator&time=1.05.30';
+    const search = new URL(shareLink(query)).search;
+
+    expect(cameFromShare(search)).toBe(true);
+    expect(cameFromShare(`?${query}`)).toBe(false);
+    expect(fromQuery(search)).toEqual(fromQuery(`?${query}`));
   });
 });

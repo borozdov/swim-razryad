@@ -46,13 +46,16 @@ export function ShareResultButton({ event, result, seconds, query }: ShareResult
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Мой разряд', text });
+        trackGoal('share_done', { what: 'result', method: 'file' });
         return;
       }
       if (navigator.share !== undefined) {
         await navigator.share({ title: 'Мой разряд', text, url: link });
+        trackGoal('share_done', { what: 'result', method: 'sheet' });
         return;
       }
       download(blob, shareFileName(card));
+      trackGoal('share_done', { what: 'result', method: 'download' });
       setToast('Картинка скачана');
       window.setTimeout(() => setToast(null), TOAST_MS);
     } catch (error) {

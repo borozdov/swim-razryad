@@ -31,10 +31,12 @@ export function ShareAppButton({ label }: ShareAppButtonProps) {
     try {
       if (navigator.share !== undefined) {
         await navigator.share({ title: TITLE, text: TEXT, url: SITE_URL });
+        trackGoal('share_done', { what: 'app', method: 'sheet' });
         return;
       }
       // No share sheet: the address goes to the clipboard instead, and the toast says so.
       await navigator.clipboard.writeText(`${TEXT}\n\n${SITE_URL}`);
+      trackGoal('share_done', { what: 'app', method: 'clipboard' });
       announce('Ссылка скопирована');
     } catch (error) {
       const name = error instanceof Error ? error.name : '';

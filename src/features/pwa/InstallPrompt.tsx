@@ -45,7 +45,15 @@ export function InstallPrompt() {
           <strong>Установите приложение</strong>
           <span>Добавьте на рабочий стол для быстрого доступа</span>
         </span>
-        <button type="button" className={s.close} onClick={install.hide} aria-label="Закрыть">
+        <button
+          type="button"
+          className={s.close}
+          onClick={() => {
+            trackGoal('install_banner_close');
+            install.hide();
+          }}
+          aria-label="Закрыть"
+        >
           ×
         </button>
       </div>

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { RANK_ORDER } from '@/domain/points/scale';
 import { formatTime } from '@/domain/points/time';
 import type { Distance, Edition, Pool, StandardRow } from '@/domain/standards/types';
+import { GoalLink } from '@/features/goals/GoalLink';
 import {
   MISSING_TIME,
   POOL_LABEL,
@@ -108,23 +109,39 @@ export function StandardsPage({ event, rows, edition, siblings, otherPool }: Sta
         <h2 className={s.subhead}>Посчитать своё время</h2>
         <ul className={s.list}>
           <li>
-            <Link href={appPath('calculator', event)} className={s.link}>
+            <GoalLink
+              href={appPath('calculator', event)}
+              goal="to_app"
+              params={{ from: 'standards_page', to: 'calculator' }}
+              className={s.link}
+            >
               Открыть калькулятор на этой дистанции
-            </Link>
+            </GoalLink>
           </li>
           <li>
-            <Link href={appPath('calculator')} className={s.link}>
+            <GoalLink
+              href={appPath('calculator')}
+              goal="to_app"
+              params={{ from: 'standards_page', to: 'calculator' }}
+              className={s.link}
+            >
               Калькулятор разряда по плаванию
-            </Link>
+            </GoalLink>
           </li>
         </ul>
       </section>
 
       <p className={s.source}>
         Источник:{' '}
-        <a href={edition.order} className={s.link} rel="nofollow noopener">
+        <GoalLink
+          href={edition.order}
+          goal="open_order"
+          params={{ from: 'standards_page' }}
+          className={s.link}
+          rel="nofollow noopener"
+        >
           приказ Минспорта России № 1092
-        </a>
+        </GoalLink>
         , приложение № 1.
       </p>
     </article>

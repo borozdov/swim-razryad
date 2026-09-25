@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { trackGoal } from '@/lib/analytics';
 import { Toast } from '@/ui';
 
 /**
@@ -53,6 +54,7 @@ export function ServiceWorkerBridge() {
       action={{
         label: 'Обновить',
         onClick: () => {
+          trackGoal('sw_update');
           waiting?.postMessage({ type: 'SKIP_WAITING' });
           setWaiting(null);
         },
