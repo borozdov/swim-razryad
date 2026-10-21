@@ -7,7 +7,7 @@
 
   Bump CACHE_NAME to drop every old cache at once.
 */
-const CACHE_NAME = 'razryad-v6';
+const CACHE_NAME = 'razryad-v7';
 
 /**
  * The app shell: the app itself, which is one page with both of its modes, the QR card,

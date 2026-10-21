@@ -17,6 +17,8 @@ export type ScaleBarProps = {
   points: number;
   nodes: readonly ScaleNode[];
   groups?: readonly ScaleGroup[];
+  /** Accessible name. Defaults to the position out of the highest node. */
+  label?: string;
 };
 
 const HEIGHT = 58;
@@ -46,14 +48,14 @@ function labelShift(value: number, max: number): number {
   return share >= 0.85 && share < 0.95 ? -4 : 0;
 }
 
-export function ScaleBar({ points, nodes, groups = [] }: ScaleBarProps) {
+export function ScaleBar({ points, nodes, groups = [], label }: ScaleBarProps) {
   const max = Math.max(1, ...nodes.map((node) => node.points));
   const position = toPercent(points, max);
   return (
     <svg
       className={s.root}
       role="img"
-      aria-label={`${Math.round(points)} из ${max}`}
+      aria-label={label ?? `${Math.round(points)} из ${max}`}
       width="100%"
       height={HEIGHT}
       overflow="visible"

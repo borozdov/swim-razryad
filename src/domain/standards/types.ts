@@ -28,7 +28,7 @@ export type Edition = {
 };
 
 export type PointsResult = {
-  /** Integer, normally 0..1000, values outside the scale are possible. */
+  /** FINA points, an integer. Above 1000 when the swim beats the base time. */
   points: number;
   /** Achieved rank, null when the result is slower than III youth. */
   achievedRank: Rank | null;

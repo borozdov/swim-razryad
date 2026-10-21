@@ -1,23 +1,5 @@
 import type { Rank } from '@/domain/standards/types';
 
-/**
- * Where each rank sits on the 0-1000 scale.
- *
- * Change these only on purpose and bump the core version with the change: every
- * number the product has ever shown is rewritten by an edit here.
- */
-export const RANK_POINTS: Record<Rank, number> = {
-  YOUTH_3: 100,
-  YOUTH_2: 200,
-  YOUTH_1: 300,
-  ADULT_3: 400,
-  ADULT_2: 500,
-  ADULT_1: 600,
-  CMS: 750,
-  MS: 900,
-  MSMK: 1000,
-};
-
 /** Slow rank to fast rank. Source of truth for walking the scale. */
 export const RANK_ORDER: readonly Rank[] = [
   'YOUTH_3',

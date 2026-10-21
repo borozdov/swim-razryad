@@ -37,7 +37,7 @@ const SPLASH_SCREENS = [
 export const metadata: Metadata = {
   ...siteMetadata,
   title: { default: 'Разряд', template: '%s · Разряд' },
-  description: 'Разрядные нормативы ЕВСК по плаванию и очки разряда.',
+  description: 'Разрядные нормативы ЕВСК по плаванию и очки FINA.',
   manifest: '/manifest.webmanifest',
   /*
     Raster only, and never a vector that follows the colour scheme: an icon that inverts

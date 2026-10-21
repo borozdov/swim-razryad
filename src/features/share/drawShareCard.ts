@@ -137,7 +137,7 @@ export const drawShareCard = async (card: ShareCard, root: Element): Promise<Blo
 
   context.fillStyle = colour.slate;
   context.font = `500 30px ${SANS}`;
-  const tail = card.gap === null ? `Очки ${card.points}` : `${card.gap}  ·  Очки ${card.points}`;
+  const tail = card.gap === null ? `Очки FINA ${card.points}` : `${card.gap}  ·  Очки FINA ${card.points}`;
   context.fillText(tail, SIZE / 2, 910);
 
   label(context, 'razryad.borozdov.ru', 975, colour.slate);

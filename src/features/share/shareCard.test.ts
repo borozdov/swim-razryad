@@ -22,7 +22,7 @@ describe('the card a result is shared as', () => {
       pool: 'Бассейн 50 м',
       rank: 'I спортивный',
       time: '25.20',
-      points: '600',
+      points: '571',
       gap: 'до КМС 1.25 с',
     });
   });

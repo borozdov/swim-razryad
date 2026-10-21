@@ -2,24 +2,19 @@ import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_EDITION, eventKey, findStandard } from '@/domain/standards/registry';
 import type { EventSelector } from '@/domain/standards/registry';
-import type { PointsResult, Rank, StandardRow } from '@/domain/standards/types';
-import { calculate, pointsForTime } from './calculate';
-import { RANK_ORDER, RANK_POINTS } from './scale';
+import type { PointsResult, StandardRow } from '@/domain/standards/types';
+import { BASE_TIMES } from './baseTimes';
+import { calculate, rankPoints } from './calculate';
+import { RANK_ORDER } from './scale';
 
 /** The check row of tech.md, «Источник чисел»: men, 50 m pool, freestyle 50 m. */
 const CHECK: EventSelector = { pool: 'LCM', sex: 'M', stroke: 'FREE', distance: 50 };
 
-/** Its nine standards, straight from приказ № 1092. */
-const MSMK = 21.91;
-const MS = 23.2;
-const CMS = 23.95;
-const ADULT_1 = 25.2;
-const YOUTH_1 = 35.8;
-const YOUTH_3 = 55.8;
+/** Its base time in the World Aquatics table of 2026, the men's 50 m freestyle world record. */
+const CHECK_BASE = 20.91;
 
-/** The formula as tech.md prints it in «Ядро предметной логики». */
-const scaleFormula = (t1: number, s1: number, t2: number, s2: number, t: number): number =>
-  s1 + ((s2 - s1) * ((t1 / t) ** 3 - 1)) / ((t1 / t2) ** 3 - 1);
+/** The formula as World Aquatics publishes it and fina.borozdov.ru prints it, floored. */
+const finaFormula = (base: number, time: number): number => Math.floor(1000 * (base / time) ** 3);
 
 const selectorOf = ({ pool, sex, stroke, distance }: StandardRow): EventSelector => ({
   pool,
@@ -28,16 +23,16 @@ const selectorOf = ({ pool, sex, stroke, distance }: StandardRow): EventSelector
   distance,
 });
 
+const baseOf = (row: StandardRow): number => {
+  const base = BASE_TIMES[eventKey(row)];
+  if (base === undefined) throw new Error(`No base time for ${eventKey(row)}`);
+  return base;
+};
+
 const resultFor = (event: EventSelector, seconds: number, age?: number): PointsResult => {
   const result = calculate({ ...event, seconds, age });
   if (result === null) throw new Error(`No result for ${seconds} s on ${eventKey(event)}`);
   return result;
-};
-
-const pointsAt = (times: StandardRow['times'], seconds: number): number => {
-  const points = pointsForTime(times, seconds);
-  if (points === null) throw new Error(`No points for ${seconds} s`);
-  return points;
 };
 
 /** Any event the edition carries. */
@@ -46,27 +41,36 @@ const anyRow = fc.constantFrom(...CURRENT_EDITION.rows);
 /** A swim time in whole hundredths, the resolution a result is measured in. */
 const anyTime = fc.integer({ min: 1, max: 300_000 }).map((hundredths) => hundredths / 100);
 
-describe('a time that sits on a node of the scale', () => {
-  it('scores the points of that rank exactly, on every rank of every event', () => {
-    for (const row of CURRENT_EDITION.rows) {
-      for (const rank of RANK_ORDER) {
-        const time = row.times[rank];
-        if (time === undefined) continue;
+describe('the points of a swim', () => {
+  it('are the FINA points fina.borozdov.ru prints for the same swim', () => {
+    // Every standard of the check row, scored in fina-point with the same base time.
+    const standards = [21.91, 23.2, 23.95, 25.2, 27.6, 29.8, 35.8, 45.8, 55.8];
 
-        expect({ key: eventKey(row), rank, points: pointsAt(row.times, time) }).toEqual({
-          key: eventKey(row),
-          rank,
-          points: RANK_POINTS[rank],
-        });
-      }
+    expect(standards.map((time) => resultFor(CHECK, time).points)).toEqual([
+      869, 732, 665, 571, 434, 345, 199, 95, 52,
+    ]);
+  });
+
+  it('follow the World Aquatics formula on every event at any time', () => {
+    fc.assert(
+      fc.property(anyRow, anyTime, (row, seconds) => {
+        expect(resultFor(selectorOf(row), seconds).points).toBe(finaFormula(baseOf(row), seconds));
+      }),
+    );
+  });
+
+  it('are 1000 exactly at the base time of every event', () => {
+    for (const row of CURRENT_EDITION.rows) {
+      expect({
+        key: eventKey(row),
+        points: resultFor(selectorOf(row), baseOf(row)).points,
+      }).toEqual({ key: eventKey(row), points: 1000 });
     }
   });
 
-  it('names that rank as achieved and the next one as the target', () => {
-    const result = resultFor(CHECK, MS);
-
-    expect(result).toEqual({
-      points: 900,
+  it('name the rank met and the next one as the target', () => {
+    expect(resultFor(CHECK, 23.2)).toEqual({
+      points: 732,
       achievedRank: 'MS',
       nextRank: 'MSMK',
       gapSeconds: 1.29,
@@ -76,92 +80,48 @@ describe('a time that sits on a node of the scale', () => {
   });
 });
 
-describe('a time inside a segment', () => {
-  it('follows the formula of tech.md between the two ranks around it', () => {
-    expect(pointsAt(findStandard(CHECK)?.times ?? {}, 24)).toBe(
-      Math.round(scaleFormula(ADULT_1, 600, CMS, 750, 24)),
-    );
-  });
-
-  it('follows it on every segment of every event', () => {
-    fc.assert(
-      fc.property(anyRow, fc.integer({ min: 1, max: 99 }), (row, share) => {
-        const present = RANK_ORDER.map((rank) => [rank, row.times[rank]] as const).filter(
-          (entry): entry is readonly [Rank, number] => entry[1] !== undefined,
-        );
-
-        for (let index = 1; index < present.length; index += 1) {
-          const [slowRank, slow] = present[index - 1];
-          const [fastRank, fast] = present[index];
-          const time = Math.round((slow + ((fast - slow) * share) / 100) * 100) / 100;
-          if (time <= fast || time >= slow) continue;
-
-          expect(pointsAt(row.times, time)).toBe(
-            Math.round(
-              scaleFormula(slow, RANK_POINTS[slowRank], fast, RANK_POINTS[fastRank], time),
-            ),
-          );
-        }
-      }),
-    );
-  });
-});
-
-describe('a time beyond the ends of the scale', () => {
-  it('extrapolates the same curve above MSMK', () => {
-    const result = resultFor(CHECK, 21);
+describe('a time beyond the ends of the ladder', () => {
+  it('scores above 1000 when faster than the base time, with no rank ahead', () => {
+    const result = resultFor(CHECK, 20);
 
     expect(result).toEqual({
-      points: Math.round(scaleFormula(MS, 900, MSMK, 1000, 21)),
+      points: finaFormula(CHECK_BASE, 20),
       achievedRank: 'MSMK',
       nextRank: null,
       gapSeconds: null,
       blockedByAge: [],
       editionId: '2024-11-26',
     });
-    expect(result.points).toBeGreaterThan(RANK_POINTS.MSMK);
+    expect(result.points).toBeGreaterThan(1000);
   });
 
-  it('extrapolates the same curve below III youth', () => {
-    const result = resultFor(CHECK, 60);
-
-    expect(result).toEqual({
-      points: 80,
+  it('still scores below III youth and names III youth as the target', () => {
+    expect(resultFor(CHECK, 60)).toEqual({
+      points: 42,
       achievedRank: null,
       nextRank: 'YOUTH_3',
       gapSeconds: 4.2,
       blockedByAge: [],
       editionId: '2024-11-26',
     });
-    expect(result.points).toBeLessThan(RANK_POINTS.YOUTH_3);
-  });
-
-  it('keeps a beginner above zero however slow the swim is', () => {
-    expect(resultFor(CHECK, 100).points).toBeGreaterThan(0);
-    expect(resultFor(CHECK, 300).points).toBeGreaterThan(0);
   });
 });
 
-describe('a rank the order leaves blank', () => {
-  const full = findStandard(CHECK)?.times ?? {};
-  const gapped: StandardRow['times'] = { ...full };
-  delete gapped.YOUTH_2;
+describe('the points of the ranks', () => {
+  const row = findStandard(CHECK);
+  if (row === undefined) throw new Error('The check row is missing');
 
-  it('lets the segment span to the next rank that exists', () => {
-    expect(pointsAt(gapped, 45.8)).toBe(Math.round(scaleFormula(YOUTH_3, 100, YOUTH_1, 300, 45.8)));
-  });
-
-  it('leaves the ranks around the blank untouched', () => {
-    expect(pointsAt(gapped, YOUTH_3)).toBe(RANK_POINTS.YOUTH_3);
-    expect(pointsAt(gapped, YOUTH_1)).toBe(RANK_POINTS.YOUTH_1);
-  });
-
-  it('opens no break in the curve where the rank is missing', () => {
-    const across = [50, 47, 45.81, 45.8, 45.79, 44, 40];
-
-    expect(across.map((time) => pointsAt(gapped, time))).toEqual(
-      across.map((time) => Math.round(scaleFormula(YOUTH_3, 100, YOUTH_1, 300, time))),
+  it('score each standard of the event like any swim, slow rank first', () => {
+    expect(rankPoints(row)).toEqual(
+      RANK_ORDER.map((rank) => ({ rank, points: resultFor(CHECK, row.times[rank] ?? 0).points })),
     );
+  });
+
+  it('skip a rank the order leaves blank and leave the others where they were', () => {
+    const gapped: StandardRow = { ...row, times: { ...row.times } };
+    delete gapped.times.YOUTH_2;
+
+    expect(rankPoints(gapped)).toEqual(rankPoints(row).filter(({ rank }) => rank !== 'YOUTH_2'));
   });
 });
 
@@ -191,7 +151,7 @@ describe('age', () => {
 
     for (const result of results) {
       expect({ points: result.points, nextRank: result.nextRank, gap: result.gapSeconds }).toEqual({
-        points: 759,
+        points: 669,
         nextRank: 'MS',
         gap: 0.7,
       });
@@ -236,7 +196,7 @@ describe('calculate is a pure function', () => {
   });
 });
 
-describe('the invariants of the scale', () => {
+describe('the invariants of the points', () => {
   it('never falls as the time falls', () => {
     fc.assert(
       fc.property(anyRow, anyTime, anyTime, (row, one, other) => {
@@ -245,17 +205,6 @@ describe('the invariants of the scale', () => {
         const slower = resultFor(event, Math.max(one, other));
 
         expect(faster.points).toBeGreaterThanOrEqual(slower.points);
-      }),
-    );
-  });
-
-  it('scores a node exactly', () => {
-    fc.assert(
-      fc.property(anyRow, fc.constantFrom(...RANK_ORDER), (row, rank) => {
-        const time = row.times[rank];
-        if (time === undefined) return;
-
-        expect(resultFor(selectorOf(row), time).points).toBe(RANK_POINTS[rank]);
       }),
     );
   });

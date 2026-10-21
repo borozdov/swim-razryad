@@ -8,7 +8,7 @@ import s from './ShareAppButton.module.css';
 
 const TITLE = 'Разряд';
 
-const TEXT = 'Разрядные нормативы ЕВСК по плаванию и очки разряда. Работает без интернета.';
+const TEXT = 'Разрядные нормативы ЕВСК по плаванию и очки FINA. Работает без интернета.';
 
 const TOAST_MS = 2200;
 
